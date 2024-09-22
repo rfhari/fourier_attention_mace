@@ -214,9 +214,17 @@ class MACE(torch.nn.Module):
                             gate,
                             o3.Irreps("256x0e"), #change size of head 
                             len(heads),
-                        )                        
-            
+                        )       
+           
         self.ewald_potential = EwaldPotential()
+
+        self.ewald_energy = NonLinearReadoutBlock(
+                            o3.Irreps("256x0e"),
+                            (len(heads) * MLP_irreps).simplify(),
+                            gate,
+                            o3.Irreps("1x0e"), #change size of head 
+                            len(heads),
+                        )        
 
     def forward(
         self,
@@ -316,6 +324,7 @@ class MACE(torch.nn.Module):
                 dim=0,
                 dim_size=num_graphs,
             )  # [n_graphs,]
+            print("energy graph:", energy.shape, node_energies.shape)
             energies.append(energy)
             node_energies_list.append(node_energies)
 
@@ -335,13 +344,30 @@ class MACE(torch.nn.Module):
         k_node_feats = self.k_nonlinear_readout(linear_node_feats)
         logging.info(f"k_node_feats: {k_node_feats.shape}")
         
-        long_range_energy = self.ewald_potential(q_node_feats, v_node_feats, k_node_feats, data)
+        long_range_embedding = self.ewald_potential(q_node_feats, v_node_feats, k_node_feats, data)
+        logging.info(f"long_range_embedding: {long_range_embedding.shape}")
         # Sum over energy contributions
-        contributions = torch.stack(energies, dim=-1)
-        total_energy = torch.sum(contributions, dim=-1)  # [n_graphs, ]
-        node_energy_contributions = torch.stack(node_energies_list, dim=-1)
-        node_energy = torch.sum(node_energy_contributions, dim=-1)  # [n_nodes, ]
 
+        long_range_node_energy = self.ewald_energy(long_range_embedding)
+        long_range_graph_energy = scatter_sum(
+                                        src=long_range_node_energy.reshape(-1,),
+                                        index=data["batch"],
+                                        dim=0,
+                                        dim_size=num_graphs,
+                                    ) 
+        logging.info(f"long_range_energy: {long_range_node_energy.shape}, {long_range_graph_energy.shape}")
+
+        contributions = torch.stack(energies, dim=-1)
+        logging.info(f"contributions: {contributions.shape}, {len(energies)}, {energy.shape}")
+
+        total_energy = torch.sum(contributions, dim=-1) + long_range_graph_energy  # [n_graphs, ]
+        logging.info(f"total_energy: {total_energy.shape}")
+        
+        node_energy_contributions = torch.stack(node_energies_list, dim=-1)
+        logging.info(f"node_energy_contributions: {node_energy_contributions.shape}")
+        
+        node_energy = torch.sum(node_energy_contributions, dim=-1)  # [n_nodes, ]
+        logging.info(f"node_energy: {node_energy.shape}")
         
         # Outputs
         forces, virials, stress, hessian = get_outputs(

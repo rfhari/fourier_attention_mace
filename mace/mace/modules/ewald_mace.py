@@ -27,6 +27,7 @@ class EwaldPotential(nn.Module):
         self.k_sq_max = (self.twopi / self.dl) ** 2
 
     def forward(self, q_vector, k_vector, v_vector, data: Dict[str, torch.Tensor], **kwargs):
+        print("q_vector from forward:", q_vector.shape)
         if data["batch"] is None:
             n_nodes = data['positions'].shape[0]
             batch_now = torch.zeros(n_nodes, dtype=torch.int64, device=data['positions'].device)
@@ -58,7 +59,7 @@ class EwaldPotential(nn.Module):
             print("v_pot:", v_pot.shape)
             k_pot = self.compute_potential(r[mask], k_vector[mask], box[i], 'k')
             print("k_pot:", k_pot.shape)
-            attention_list = []
+            node_feats_list = []
             for ind in range(q_pot.shape[1]): #iterate across atoms in given unitcell 
                 q_atom = q_pot[:, ind, :]
                 print("q_atom:", q_atom.shape)
@@ -68,15 +69,17 @@ class EwaldPotential(nn.Module):
                 print("attention_weights:", attention_weights.shape, r[mask][ind])
                 # attention_list.append(attention_weights)
                 real_space_node_feats = self.compute_inverse_transform(r[mask][ind, :], attention_weights, box[i])
+                node_feats_list.append(real_space_node_feats.reshape(-1,))
+            node_feats_list = torch.stack(node_feats_list, dim=0)
 
             # Take the real part of the potential
             # attention_list = torch.stack(attention_list)
             # attention_list = torch.transpose(attention_list, 0, 1)
-            # print("attention_list:", attention_list.shape)
-            results.append(pot)
-
-        data[self.output_key] = torch.stack(results, dim=0).sum(axis=1) if self.aggregation_mode == "sum" else torch.stack(results, dim=0)
-        return data
+            print("node_feats_list:", node_feats_list.shape)
+            results.append(node_feats_list)
+        results = torch.cat(results, dim=0) 
+        print("results:", results.shape)       
+        return results
 
     def compute_potential(self, r_raw, q, box, value):
         """ Compute the Ewald long-range potential for one configuration """
@@ -201,7 +204,7 @@ class EwaldPotential(nn.Module):
         term_list = torch.stack(term_list, dim=0) # shape of [k-vectors, atoms, features]
         sum_term = torch.sum(term_list, dim=0)
         print("values in IFT block:", counter, term.shape, term_before_sum.shape, term_list.shape, sum_term.shape)
-        print("IFT sum term:", sum_term)   
+        # print("IFT sum term:", sum_term)   
         # print(torch.real(term))
         # pot = torch.stack(pot_list).sum(axis=0) / (box[0] * box[1] * box[2])
         
@@ -209,7 +212,7 @@ class EwaldPotential(nn.Module):
         # if self.remove_self_interaction:
         #     pot -= torch.sum(q ** 2) / (self.sigma * self.twopi**(3./2.))
 
-        return sum_term #torch.real(torch.conj(term) * term)
+        return torch.real(sum_term) #torch.real(torch.conj(term) * term)
 
     # Optimized function
     def compute_potential_optimized(self, r_raw, q, box):

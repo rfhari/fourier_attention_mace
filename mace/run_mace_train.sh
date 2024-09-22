@@ -20,7 +20,7 @@ python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_trai
     --r_max=6.0 \
     --forces_weight=1000 \
     --energy_weight=10 \
-    --batch_size=4 \
+    --batch_size=2 \
     --valid_batch_size=8 \
     --max_num_epochs=10 \
     --start_swa=6 \
