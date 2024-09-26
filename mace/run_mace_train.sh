@@ -7,34 +7,89 @@ export PYTHONPATH=/home/hari/Desktop/Research/mace_fourier_attention/mace:$PYTHO
 
 python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_train.py \
     --log_dir="/home/hari/Desktop/Research/mace_fourier_attention/mace/logs" \
-    --name="ca-water-periodic" \
-    --train_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/cawaterpbc/cawater_train.xyz" \
-    --valid_fraction=0.05 \
-    --test_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/cawaterpbc/cawater_test.xyz" \
+    --energy_key="energy" \
+    --forces_key="forces" \
+    --name="dimer-cc" \
+    --train_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_train.xyz" \
+    --valid_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_test.xyz" \
+    --test_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_test.xyz" \
     --E0s="average" \
     --model="MACE" \
     --num_interactions=2 \
     --num_channels=256 \
-    --max_L=0 \
+    --max_L=2 \
     --correlation=3 \
-    --r_max=6.0 \
+    --r_max=6 \
     --forces_weight=1000 \
     --energy_weight=10 \
     --batch_size=2 \
-    --valid_batch_size=8 \
-    --max_num_epochs=10 \
-    --start_swa=6 \
+    --valid_batch_size=2 \
+    --max_num_epochs=800 \
+    --start_swa=600 \
     --scheduler_patience=5 \
-    --patience=5 \
+    --patience=15 \
     --eval_interval=3 \
     --ema \
     --swa \
-    --swa_forces_weight=10 \
+    --swa_forces_weight=1000 \
     --error_table='PerAtomMAE' \
     --default_dtype="float64"\
     --device=cpu \
     --seed=123 \
     --save_cpu
+
+# python mace/cli/run_train.py \
+#     --name="MACE" \
+#     --train_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/buckyball_catcher/buckyball_catcher_train_eV.xyz" \
+#     --valid_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/buckyball_catcher/buckyball_catcher_test_eV.xyz" \
+#     --test_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/buckyball_catcher/buckyball_catcher_test_eV.xyz" \
+#     --config_type_weights='{"Default":1.0}' \
+#     --E0s='average' \
+#     --model="MACE" \
+#     --hidden_irreps='128x0e + 128x1o' \
+#     --r_max=5.0 \
+#     --batch_size=10 \
+#     --max_num_epochs=100 \
+#     --swa \
+#     --start_swa=90 \
+#     --ema \
+#     --ema_decay=0.99 \
+#     --amsgrad \
+#     --device=cpu \
+#     --save_cpu
+
+
+# python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_train.py \
+#     --name="buckyball" \
+#     --train_file="nanotube_large.xyz" \
+#     --valid_fraction=0.05 \
+#     --test_file="nanotube_test.xyz" \
+#     --E0s="average" \
+#     --model="MACE" \
+#     --num_interactions=1 \
+#     --num_channels=256 \
+#     --max_L=0 \
+#     --correlation=3 \
+#     --r_max=6.0 \
+#     --forces_weight=1000 \
+#     --energy_weight=10 \
+#     --batch_size=4 \
+#     --valid_batch_size=8 \
+#     --max_num_epochs=1000 \
+#     --start_swa=600 \
+#     --scheduler_patience=5 \
+#     --patience=15 \
+#     --eval_interval=3 \
+#     --ema \
+#     --swa \
+#     --swa_forces_weight=10 \
+#     --error_table='PerAtomMAE' \
+#     --default_dtype="float64"\
+#     --device=cuda \
+#     --seed=123 \
+#     --restart_latest \
+#     --save_cpu
+
 
 
 # python /grand/QuantumDS/hariharr/MACE_LR/mace_train/scripts/run_train.py \
@@ -74,4 +129,4 @@ python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_trai
 #     --default_dtype="float64" \
 #     --seed=456 \
 #     --restart_latest \
-#     --save_cpu > /grand/QuantumDS/hariharr/MACE_LR/mace_train/nacl_water_key_test.out
+#     --save_cpu > /grand/QuantumDS/hariharr/MACE_LR/mace_train/nacl_water_key_test.out    

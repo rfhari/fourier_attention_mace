@@ -6,7 +6,7 @@ import numpy as np
 
 class EwaldPotential(nn.Module):
     def __init__(self,
-                 dl=2.0,  # grid resolution
+                 dl=4.0,  # grid resolution
                  sigma=1.0,  # width of the Gaussian on each atom
                  remove_self_interaction=False,
                 #  feature_key: str = 'q',
