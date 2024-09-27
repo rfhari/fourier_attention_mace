@@ -74,14 +74,18 @@ class EwaldPotential(nn.Module):
             # node_feats_list = torch.stack(node_feats_list, dim=0)
 
             attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(q_pot, 1, 2), k_pot)
+            attention_weights = attention_weights / torch.sqrt(torch.tensor(k_pot.shape[1], dtype=torch.float))
             print("attention_weights:", attention_weights.shape)
             attention_weights = torch.softmax(torch.real(attention_weights), dim=1)
-            attention_weights = attention_weights.unsqueeze(-1)
-            value_expanded = v_pot.unsqueeze(0)
-            weighted_values = torch.sum(attention_weights * value_expanded, dim=1)
+            # attention_weights = attention_weights.unsqueeze(-1)
+            # value_expanded = v_pot.unsqueeze(0)
+            # print("expanded vectors:", attention_weights.shape, value_expanded.shape)
+            # weighted_values = torch.sum(attention_weights * value_expanded, dim=1)
+            weighted_values = attention_weights[:, :, None] * v_pot[None, :, :]
             print("weighted_values:", weighted_values.shape)
-
-            real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask], weighted_values, box[i])
+            for inver_ind in range(weighted_values.shape[0]):
+                # real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask][inver_ind], weighted_values[inver_ind], box[i])
+                real_space_weighted_values = self.compute_inverse_transform(r[mask][inver_ind], weighted_values[inver_ind], box[i])
             # attention_list = torch.stack(attention_list)
             # attention_list = torch.transpose(attention_list, 0, 1)
             print("node_feats_list:", weighted_values.shape, real_space_weighted_values.shape)
@@ -170,7 +174,7 @@ class EwaldPotential(nn.Module):
 
         # Calculate nk based on the provided box dimensions and resolution
         nk = (box / self.dl).int().tolist()
-        print("IFT nk:", nk, r.shape)
+        print("IFT nk:", nk, r.shape, q.shape, box, self.dl, self.k_sq_max)
         
         for i in range(3):
             if nk[i] < 1: nk[i] = 1
@@ -223,7 +227,7 @@ class EwaldPotential(nn.Module):
         # if self.remove_self_interaction:
         #     pot -= torch.sum(q ** 2) / (self.sigma * self.twopi**(3./2.))
 
-        return torch.real(sum_term) #torch.real(torch.conj(term) * term)
+        return torch.real(sum_term2) #torch.real(torch.conj(term) * term)
 
     # Optimized function
     def compute_potential_optimized(self, r_raw, q, box, vector_type):
@@ -319,10 +323,12 @@ class EwaldPotential(nn.Module):
         return return_val #pot.real * self.norm_factor
 
     def compute_inverse_transform_optimized(self, r_raw, q, box):
+        r_raw = r_raw.reshape(1,-1)
         dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
         device = r_raw.device
 
         r = r_raw / box
+        print("optimized_inverse:", r_raw.shape, r.shape)
 
         nk = (box / self.dl).int().tolist()
         nk = [max(1, k) for k in nk]
@@ -382,8 +388,8 @@ class EwaldPotential(nn.Module):
             raise ValueError("q must be 1D or 2D tensor")
         
         k_vectors = mask.nonzero()
+        print("eikx, eiky, eikz shape:", eikx.shape, eiky.shape, eikz.shape, k_sq.shape,  mask.nonzero().shape)
         print("k_vectors shape:", k_vectors.shape, torch.max(k_vectors, dim=0), torch.min(k_vectors, dim=0))
-        print("k_vectors dtype:", k_vectors.dtype)
 
         value = q_expanded * (eikx_expanded * eiky_expanded * eikz_expanded).unsqueeze(1)
         print("value from optimized ewald sum:", value.shape)
