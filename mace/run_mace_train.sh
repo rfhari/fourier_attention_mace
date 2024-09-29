@@ -9,7 +9,7 @@ python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_trai
     --log_dir="/home/hari/Desktop/Research/mace_fourier_attention/mace/logs" \
     --energy_key="energy" \
     --forces_key="forces" \
-    --name="dimer-cc" \
+    --name="dimer-cc-sr-mace" \
     --train_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_train.xyz" \
     --valid_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_test.xyz" \
     --test_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_test.xyz" \
