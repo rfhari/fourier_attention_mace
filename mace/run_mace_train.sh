@@ -1,18 +1,65 @@
 #!/bin/bash 
 
-source /home/hari/anaconda3/etc/profile.d/conda.sh
-conda activate /home/hari/anaconda3/envs/mace_fr
+#SBATCH -J mace_exp
+#SBATCH -p batch
+#SBATCH -o mace_lr_%j.out
+#SBATCH --time=10:00:00
+#SBATCH -N 1           
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=100G
+#SBATCH --gpus=1
 
-export PYTHONPATH=/home/hari/Desktop/Research/mace_fourier_attention/mace:$PYTHONPATH
+MINICONDA_PATH=/trace/group/mcgaughey/hariharr/miniconda3
+source $MINICONDA_PATH/etc/profile.d/conda.sh
 
-python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_train.py \
-    --log_dir="/home/hari/Desktop/Research/mace_fourier_attention/mace/logs" \
+conda activate /trace/group/mcgaughey/hariharr/miniconda3/envs/mace
+
+export PYTHONPATH=/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace:$PYTHONPATH
+
+# python /trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace/mace/cli/run_train.py \
+#     --log_dir="./logs" \
+#     --energy_key="energy" \
+#     --forces_key="forces" \
+#     --name="dimer-cc-lr-mace-vslides" \
+#     --train_file="./custom_dataset/dimer_cc/dimers_cc_train.xyz" \
+#     --valid_file="./custom_dataset/dimer_cc/dimers_cc_test.xyz" \
+#     --test_file="./custom_dataset/dimer_cc/dimers_cc_test.xyz" \
+#     --E0s="average" \
+#     --model="MACE" \
+#     --num_interactions=2 \
+#     --num_channels=256 \
+#     --max_L=2 \
+#     --correlation=3 \
+#     --r_max=6 \
+#     --forces_weight=1000 \
+#     --energy_weight=10 \
+#     --batch_size=2 \
+#     --valid_batch_size=2 \
+#     --max_num_epochs=2000 \
+#     --start_swa=1200 \
+#     --scheduler_patience=5 \
+#     --patience=15 \
+#     --eval_interval=3 \
+#     --ema \
+#     --swa \
+#     --swa_forces_weight=1000 \
+#     --error_table='PerAtomMAE' \
+#     --default_dtype="float64"\
+#     --device=cuda \
+#     --seed=123 \
+#     --save_cpu
+
+
+
+python ./mace/cli/run_train.py \
+    --log_dir="./logs" \
     --energy_key="energy" \
     --forces_key="forces" \
-    --name="dimer-cc-sr-mace" \
-    --train_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_train.xyz" \
-    --valid_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_test.xyz" \
-    --test_file="/home/hari/Desktop/Research/mace_fourier_attention/mace/custom_dataset/dimer_cc/dimers_cc_test.xyz" \
+    --name="dimer-PP-lr-remove-adjusted-mace" \
+    --train_file="./custom_dataset/dimer_datasets/dimers_PP_train.xyz" \
+    --valid_file="./custom_dataset/dimer_datasets/dimers_PP_test.xyz" \
+    --test_file="./custom_dataset/dimer_datasets/dimers_PP_test.xyz" \
     --E0s="average" \
     --model="MACE" \
     --num_interactions=2 \
@@ -20,23 +67,24 @@ python /home/hari/Desktop/Research/mace_fourier_attention/mace/mace/cli/run_trai
     --max_L=2 \
     --correlation=3 \
     --r_max=6 \
-    --forces_weight=1000 \
+    --forces_weight=100 \
     --energy_weight=10 \
     --batch_size=2 \
     --valid_batch_size=2 \
-    --max_num_epochs=800 \
-    --start_swa=600 \
+    --max_num_epochs=400 \
+    --start_swa=200 \
     --scheduler_patience=5 \
-    --patience=15 \
+    --patience=7 \
     --eval_interval=3 \
     --ema \
     --swa \
-    --swa_forces_weight=1000 \
+    --lr=0.01 \
+    --swa_forces_weight=10 \
+    --swa_energy_weight=100 \
     --error_table='PerAtomMAE' \
     --default_dtype="float64"\
-    --device=cpu \
-    --seed=123 \
-    --save_cpu
+    --device=cuda \
+    --seed=123 
 
 # python mace/cli/run_train.py \
 #     --name="MACE" \

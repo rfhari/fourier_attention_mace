@@ -493,13 +493,14 @@ class MACE(torch.nn.Module):
            
         self.ewald_potential = EwaldPotential()
 
-        self.ewald_energy = NonLinearReadoutBlock(
-                            o3.Irreps("256x0e"),
-                            (len(heads) * MLP_irreps).simplify(),
-                            gate,
-                            o3.Irreps("1x0e"), #change size of head 
-                            len(heads),
-                        )        
+        # self.ewald_energy = NonLinearReadoutBlock(
+        #                     o3.Irreps("256x0e"),
+        #                     (len(heads) * MLP_irreps).simplify(),
+        #                     gate,
+        #                     o3.Irreps("1x0e"), #change size of head 
+        #                     len(heads),
+        #                 ) 
+        self.ewald_energy = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("1x0e"))     
 
     def forward(
         self,

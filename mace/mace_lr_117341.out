@@ -1,0 +1,593 @@
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/e3nn/o3/_wigner.py:10: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace/mace/calculators/mace.py:128: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  torch.load(f=model_path, map_location=device)
+/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace/plot_binding_curve.py:76: DeprecationWarning: Please use atoms.calc = calc
+  all_list[i].set_calculator(calculator)
+No dtype selected, switching to float64 to match model dtype.
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01752, max. 0.01727
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.06313, max. 0.06107
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.08081, max. 0.07119
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00266, max. 0.00331
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00008, max. 0.00007
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01846, max. 0.02461
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01461, max. 0.01428
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.05408, max. 0.05075
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.07139, max. 0.06041
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00225, max. 0.00280
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00007, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01342, max. 0.02019
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01290, max. 0.01289
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04664, max. 0.04772
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06075, max. 0.05684
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00196, max. 0.00231
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00006, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01250, max. 0.01482
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01206, max. 0.01195
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04402, max. 0.04725
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06280, max. 0.06113
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00183, max. 0.00182
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00006, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01104, max. 0.01113
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01173, max. 0.01093
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04183, max. 0.04599
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06758, max. 0.06308
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00164, max. 0.00168
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00007, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.00954, max. 0.00880
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01148, max. 0.01143
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04196, max. 0.04488
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06202, max. 0.05948
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00159
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00006, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.00925, max. 0.00915
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01144
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.05651, max. 0.06222
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00006, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01023, max. 0.00926
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01144
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.05194, max. 0.06228
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00005, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01087, max. 0.00922
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01097
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.07122, max. 0.06004
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00007, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.01055, max. 0.00931
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01111
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06585, max. 0.05803
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00007, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.00911, max. 0.00944
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01144
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.05986, max. 0.06002
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00006, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.00921, max. 0.00943
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01138
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06647, max. 0.05605
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00007, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.00922, max. 0.00913
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+energy graph: torch.Size([1]) torch.Size([18])
+energy graph: torch.Size([1]) torch.Size([18])
+q_vector from forward: torch.Size([18, 256])
+torch.isfinite(q_vector).all(): tensor(True, device='cuda:0') torch.isnan(q_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(k_vector).all(): tensor(True, device='cuda:0') torch.isnan(k_vector).any(): tensor(False, device='cuda:0')
+torch.isfinite(v_vector).all(): tensor(True, device='cuda:0') torch.isnan(v_vector).any(): tensor(False, device='cuda:0')
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from value or key: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+k_vectors shape: torch.Size([983, 3]) torch.return_types.max(
+values=tensor([ 7, 14, 14], device='cuda:0'),
+indices=tensor([962, 171,  65], device='cuda:0')) torch.return_types.min(
+values=tensor([0, 0, 0], device='cuda:0'),
+indices=tensor([ 0,  0, 51], device='cuda:0'))
+k_vectors dtype: torch.int64
+value from optimized ewald sum: torch.Size([18, 256, 8, 15, 15])
+term from query: torch.Size([18, 256, 983]) torch.Size([18, 256, 8, 15, 15]) torch.Size([983, 256])
+q_pot: torch.Size([18, 256, 983]) torch.Size([983, 256]) torch.Size([983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(q_pot).all(): tensor(True, device='cuda:0') torch.isnan(q_pot).any(): tensor(False, device='cuda:0') min. -0.01144, max. 0.01142
+i: tensor(0, device='cuda:0') torch.isfinite(k_pot).all(): tensor(True, device='cuda:0') torch.isnan(k_pot).any(): tensor(False, device='cuda:0') min. -0.04202, max. 0.04476
+i: tensor(0, device='cuda:0') torch.isfinite(v_pot).all(): tensor(True, device='cuda:0') torch.isnan(v_pot).any(): tensor(False, device='cuda:0') min. -0.06550, max. 0.05605
+i: tensor(0, device='cuda:0') torch.isfinite(attention_weights).all(): tensor(True, device='cuda:0') torch.isnan(attention_weights).any(): tensor(False, device='cuda:0') min. -0.00154, max. 0.00160
+weighted_values: torch.Size([18, 983, 256])
+i: tensor(0, device='cuda:0') torch.isfinite(weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(weighted_values).any(): tensor(False, device='cuda:0') min. -0.00007, max. 0.00006
+optimized_inverse: torch.Size([18, 3]) torch.Size([18, 3])
+mesh grid shape: torch.Size([8, 15, 15]) torch.Size([8, 15, 15]) torch.Size([8, 15, 15])
+valid_k: torch.Size([8, 15, 15])
+shapes of q: torch.Size([18, 983, 256]) True
+new_sum_term: torch.Size([18, 256]) 18
+i: tensor(0, device='cuda:0') torch.isfinite(real_space_weighted_values).all(): tensor(True, device='cuda:0') torch.isnan(real_space_weighted_values).any(): tensor(False, device='cuda:0') min. -0.00903, max. 0.00922
+node_feats_list: torch.Size([18, 983, 256]) torch.Size([18, 256])
+results: torch.Size([18, 256])
+finished plotting
