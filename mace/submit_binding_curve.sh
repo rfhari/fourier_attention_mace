@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 #SBATCH -J mace_exp
-#SBATCH -p mcgaughey
+#SBATCH -p batch
 #SBATCH -o mace_lr_%j.out
 #SBATCH --time=10:00:00
 #SBATCH -N 1           

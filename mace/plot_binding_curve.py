@@ -64,6 +64,7 @@ for i in range(len(all_list)):
     true_forces.append(all_list[i].get_forces().reshape(num_atoms_per_snapshot*3,))
 
 ground_state = avge0[1] * 10 + avge0[6] * 4 + avge0[7] * 2 + avge0[8] * 2
+print("ground state energies:", avge0)
 
 pred_energy, pred_forces = [], []
 calculator = MACECalculator(model_paths='./checkpoints/dimer-'+dimer_type+'-lr-remove-adjusted-mace_run-123_stagetwo.model', device='cuda')
@@ -81,8 +82,8 @@ for i in range(len(all_list)):
 # sr_pred_force = np.load("sr_pred_force_6_A.npy")
 
 plt.figure()
-plt.plot(distance_current, pred_energy-ground_state, 'ro', label='lr predicted')
-plt.plot(distance_current, true_energy-ground_state, 'bo', label='true values')
+plt.plot(distance_current, pred_energy, 'ro', label='lr predicted')
+plt.plot(distance_current, true_energy, 'bo', label='true values')
 # plt.plot(distance_current, sr_pred_energy-ground_state, 'ko', label='sr predicted')
 plt.legend(frameon=False)
 plt.xlabel('distance (A)')

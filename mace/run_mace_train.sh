@@ -51,15 +51,14 @@ export PYTHONPATH=/trace/group/mcgaughey/hariharr/mace_exploration/fourier_atten
 #     --save_cpu
 
 
-
 python ./mace/cli/run_train.py \
     --log_dir="./logs" \
     --energy_key="energy" \
     --forces_key="forces" \
-    --name="dimer-PP-lr-remove-adjusted-mace" \
-    --train_file="./custom_dataset/dimer_datasets/dimers_PP_train.xyz" \
-    --valid_file="./custom_dataset/dimer_datasets/dimers_PP_test.xyz" \
-    --test_file="./custom_dataset/dimer_datasets/dimers_PP_test.xyz" \
+    --name="dimer-CP-lr-remove-adjusted-mace" \
+    --train_file="./custom_dataset/dimer_datasets/dimers_CP_train.xyz" \
+    --valid_file="./custom_dataset/dimer_datasets/dimers_CP_test.xyz" \
+    --test_file="./custom_dataset/dimer_datasets/dimers_CP_test.xyz" \
     --E0s="average" \
     --model="MACE" \
     --num_interactions=2 \
@@ -71,10 +70,10 @@ python ./mace/cli/run_train.py \
     --energy_weight=10 \
     --batch_size=2 \
     --valid_batch_size=2 \
-    --max_num_epochs=400 \
-    --start_swa=200 \
+    --max_num_epochs=800 \
+    --start_swa=600 \
     --scheduler_patience=5 \
-    --patience=7 \
+    --patience=5 \
     --eval_interval=3 \
     --ema \
     --swa \

@@ -82,23 +82,22 @@ class EwaldPotential(nn.Module):
 
             real_attention_weights = torch.real(attention_weights)
             # attention_weights = attention_weights / torch.sqrt(torch.tensor(k_pot.shape[1], dtype=torch.float))
-            print("i:", i, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
-            
-            attention_weights = torch.softmax(torch.real(attention_weights), dim=1)
-            # attention_weights = attention_weights.unsqueeze(-1)
-            # value_expanded = v_pot.unsqueeze(0)
-            # print("expanded vectors:", attention_weights.shape, value_expanded.shape)
-            # weighted_values = torch.sum(attention_weights * value_expanded, dim=1)
-            weighted_values = attention_weights[:, :, None] * v_pot[None, :, :]
+            print("i:", i, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", 
+            torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
+
+            max_values, _ = torch.max(real_attention_weights, dim=-1, keepdim=True)
+            shifted_attention_weights = real_attention_weights - max_values
+
+            softmax_attention_weights = torch.softmax(shifted_attention_weights, dim=-1)
+            print("i:", i, "torch.isfinite(softmax_attention_weights).all():", torch.isfinite(softmax_attention_weights).all(), "torch.isnan(softmax_attention_weights).any():", torch.isnan(softmax_attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(softmax_attention_weights.real.min(), softmax_attention_weights.real.max()))
+            print("attention_weights after softmax:", attention_weights.shape, max_values.shape, shifted_attention_weights.shape)
+
+            weighted_values = softmax_attention_weights[:, :, None] * v_pot[None, :, :]
             print("weighted_values:", weighted_values.shape)
             print("i:", i, "torch.isfinite(weighted_values).all():", torch.isfinite(weighted_values).all(), "torch.isnan(weighted_values).any():", torch.isnan(weighted_values).all(), "min. {:.5f}, max. {:.5f}".format(weighted_values.real.min(), weighted_values.real.max()))
             real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask], weighted_values, box[i])
             print("i:", i, "torch.isfinite(real_space_weighted_values).all():", torch.isfinite(real_space_weighted_values).all(), "torch.isnan(real_space_weighted_values).any():", torch.isnan(real_space_weighted_values).all(), "min. {:.5f}, max. {:.5f}".format(real_space_weighted_values.real.min(), real_space_weighted_values.real.max()))
-            # for inver_ind in range(weighted_values.shape[0]):
-                # real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask][inver_ind], weighted_values[inver_ind], box[i])
-                # real_space_weighted_values = self.compute_inverse_transform(r[mask][inver_ind], weighted_values[inver_ind], box[i])
-            # attention_list = torch.stack(attention_list)
-            # attention_list = torch.transpose(attention_list, 0, 1)
+
             print("node_feats_list:", weighted_values.shape, real_space_weighted_values.shape)
             results.append(torch.real(real_space_weighted_values))
 
@@ -107,9 +106,6 @@ class EwaldPotential(nn.Module):
         return results
 
     def compute_potential(self, r_raw, q, box, value):
-        print("i:", i, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
-
-        """ Compute the Ewald long-range potential for one configuration """
         dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
         device = r_raw.device
 

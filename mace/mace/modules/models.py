@@ -459,37 +459,13 @@ class MACE(torch.nn.Module):
 
             # if i == num_interactions - 2:
             print("in the linear readout block", hidden_irreps_out, MLP_irreps, len(heads))
-            self.ewald_nonlinear_readout = NonLinearReadoutBlock(
-                            hidden_irreps_out,
-                            o3.Irreps("256x0e"),
-                            gate,
-                            o3.Irreps("256x0e"), #change size of head 
-                            len(heads),
-                        )
+            self.ewald_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))     
             
-            self.q_nonlinear_readout = NonLinearReadoutBlock(
-                            o3.Irreps("256x0e"),
-                            (len(heads) * MLP_irreps).simplify(),
-                            gate,
-                            o3.Irreps("256x0e"), #change size of head 
-                            len(heads),
-                        )
+            self.q_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))     
 
-            self.v_nonlinear_readout = NonLinearReadoutBlock(
-                            o3.Irreps("256x0e"),
-                            (len(heads) * MLP_irreps).simplify(),
-                            gate,
-                            o3.Irreps("256x0e"), #change size of head 
-                            len(heads),
-                        )
+            self.v_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))     
 
-            self.k_nonlinear_readout = NonLinearReadoutBlock(
-                            o3.Irreps("256x0e"),
-                            (len(heads) * MLP_irreps).simplify(),
-                            gate,
-                            o3.Irreps("256x0e"), #change size of head 
-                            len(heads),
-                        )       
+            self.k_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))     
            
         self.ewald_potential = EwaldPotential()
 
@@ -608,16 +584,16 @@ class MACE(torch.nn.Module):
         node_feats_out = torch.cat(node_feats_list, dim=-1)
         logging.info(f"node_feats_out:{node_feats.shape}, {node_feats_out[-1].shape}, {len(node_feats_out)}")
         
-        linear_node_feats = self.ewald_nonlinear_readout(node_feats)
+        linear_node_feats = self.ewald_readout(node_feats)
         logging.info(f"linear_node_feats: {linear_node_feats.shape}")
         
-        q_node_feats = self.q_nonlinear_readout(linear_node_feats)
+        q_node_feats = self.q_readout(linear_node_feats)
         logging.info(f"q_node_feats: {q_node_feats.shape}")
         
-        v_node_feats = self.v_nonlinear_readout(linear_node_feats)
+        v_node_feats = self.v_readout(linear_node_feats)
         logging.info(f"v_node_feats: {v_node_feats.shape}")
         
-        k_node_feats = self.k_nonlinear_readout(linear_node_feats)
+        k_node_feats = self.k_readout(linear_node_feats)
         logging.info(f"k_node_feats: {k_node_feats.shape}")
         
         long_range_embedding = self.ewald_potential(q_node_feats, v_node_feats, k_node_feats, data)
