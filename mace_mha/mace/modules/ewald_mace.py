@@ -43,7 +43,7 @@ class EwaldPotential(nn.Module):
         assert self.embed_dim % self.num_heads == 0, "wrong embed dim and num_heads"
         self.head_dim = self.embed_dim//self.num_heads
         self.output_dim = str(3*self.embed_dim)
-        self.ewald_readout = LinearReadoutBlock(o3.Irreps(self.embed_dim + "x0e"), o3.Irreps(self.output_dim + "x0e"))    
+        self.ewald_readout = LinearReadoutBlock(o3.Irreps(str(self.embed_dim) + "x0e"), o3.Irreps(self.output_dim + "x0e"))    
         # self.q_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))     
         # self.v_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))     
         # self.k_readout = LinearReadoutBlock(o3.Irreps("256x0e"), o3.Irreps("256x0e"))
