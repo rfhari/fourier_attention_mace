@@ -75,21 +75,21 @@ class EwaldPotential(nn.Module):
             #     node_feats_list.append(real_space_node_feats.reshape(-1,))
             # node_feats_list = torch.stack(node_feats_list, dim=0)
 
-            attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(q_pot, 1, 2), k_pot)
-            print("i:", i, "torch.isfinite(q_pot).all():", torch.isfinite(q_pot).all(), "torch.isnan(q_pot).any():", torch.isnan(q_pot).all(), "min. {:.5f}, max. {:.5f}".format(q_pot.real.min(), q_pot.real.max()))
-            print("i:", i, "torch.isfinite(k_pot).all():", torch.isfinite(k_pot).all(), "torch.isnan(k_pot).any():", torch.isnan(k_pot).all(), "min. {:.5f}, max. {:.5f}".format(k_pot.real.min(), k_pot.real.max()))
-            print("i:", i, "torch.isfinite(v_pot).all():", torch.isfinite(v_pot).all(), "torch.isnan(v_pot).any():", torch.isnan(v_pot).all(), "min. {:.5f}, max. {:.5f}".format(v_pot.real.min(), v_pot.real.max()))
+            attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(torch.abs(q_pot), 1, 2), torch.abs(k_pot))
+            print("i:", i, "q_pot dtype:", q_pot.dtype, "torch.isfinite(q_pot).all():", torch.isfinite(q_pot).all(), "torch.isnan(q_pot).any():", torch.isnan(q_pot).all(), "min. {:.5f}, max. {:.5f}".format(q_pot.real.min(), q_pot.real.max()))
+            print("i:", i, "k_pot dtype:", k_pot.dtype, "torch.isfinite(k_pot).all():", torch.isfinite(k_pot).all(), "torch.isnan(k_pot).any():", torch.isnan(k_pot).all(), "min. {:.5f}, max. {:.5f}".format(k_pot.real.min(), k_pot.real.max()))
+            print("i:", i, "v_pot dtype:", v_pot.dtype, "torch.isfinite(v_pot).all():", torch.isfinite(v_pot).all(), "torch.isnan(v_pot).any():", torch.isnan(v_pot).all(), "min. {:.5f}, max. {:.5f}".format(v_pot.real.min(), v_pot.real.max()))
 
             real_attention_weights = torch.real(attention_weights)
             # attention_weights = attention_weights / torch.sqrt(torch.tensor(k_pot.shape[1], dtype=torch.float))
-            print("i:", i, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", 
+            print("i:", i, "attention_weights dtype:", attention_weights.dtype, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", 
             torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
 
             max_values, _ = torch.max(real_attention_weights, dim=-1, keepdim=True)
             shifted_attention_weights = real_attention_weights - max_values
 
             softmax_attention_weights = torch.softmax(shifted_attention_weights, dim=-1)
-            print("i:", i, "torch.isfinite(softmax_attention_weights).all():", torch.isfinite(softmax_attention_weights).all(), "torch.isnan(softmax_attention_weights).any():", torch.isnan(softmax_attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(softmax_attention_weights.real.min(), softmax_attention_weights.real.max()))
+            print("i:", i, "softmax_attention_weights dtype:", softmax_attention_weights.dtype, "torch.isfinite(softmax_attention_weights).all():", torch.isfinite(softmax_attention_weights).all(), "torch.isnan(softmax_attention_weights).any():", torch.isnan(softmax_attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(softmax_attention_weights.real.min(), softmax_attention_weights.real.max()))
             print("attention_weights after softmax:", attention_weights.shape, max_values.shape, shifted_attention_weights.shape)
 
             weighted_values = softmax_attention_weights[:, :, None] * v_pot[None, :, :]

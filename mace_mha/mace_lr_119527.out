@@ -1,0 +1,111 @@
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/e3nn/o3/_wigner.py:10: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+from run_train args: Namespace(config=None, name='dimer-CP-lr-remove-adjusted-mace', seed=123, work_dir='.', log_dir='./logs', model_dir=None, checkpoints_dir=None, results_dir=None, downloads_dir=None, device='cuda', default_dtype='float64', distributed=False, log_level='INFO', error_table='PerAtomMAE', model='MACE', r_max=6.0, radial_type='bessel', num_radial_basis=8, num_cutoff_basis=5, pair_repulsion=False, distance_transform='None', interaction='RealAgnosticResidualInteractionBlock', interaction_first='RealAgnosticResidualInteractionBlock', max_ell=3, correlation=3, num_interactions=2, MLP_irreps='16x0e', radial_MLP='[64, 64, 64]', hidden_irreps=None, num_channels=256, max_L=2, gate='silu', scaling='rms_forces_scaling', avg_num_neighbors=1, compute_avg_num_neighbors=True, compute_stress=False, compute_forces=True, train_file='./custom_dataset/dimer_datasets/dimers_CP_train.xyz', valid_file='./custom_dataset/dimer_datasets/dimers_CP_test.xyz', valid_fraction=0.1, test_file='./custom_dataset/dimer_datasets/dimers_CP_test.xyz', test_dir=None, multi_processed_test=False, num_workers=0, pin_memory=True, atomic_numbers=None, mean=None, std=None, statistics_file=None, E0s='average', foundation_filter_elements=True, heads=None, multiheads_finetuning=True, weight_pt_head=1.0, num_samples_pt=1000, subselect_pt='random', pt_train_file=None, pt_valid_file=None, keep_isolated_atoms=False, energy_key='energy', forces_key='forces', virials_key='REF_virials', stress_key='REF_stress', dipole_key='REF_dipole', charges_key='REF_charges', loss='weighted', forces_weight=100.0, swa_forces_weight=10.0, energy_weight=10.0, swa_energy_weight=100.0, virials_weight=1.0, swa_virials_weight=10.0, stress_weight=1.0, swa_stress_weight=10.0, dipole_weight=1.0, swa_dipole_weight=1.0, config_type_weights='{"Default":1.0}', huber_delta=0.01, optimizer='adam', beta=0.9, batch_size=2, valid_batch_size=2, lr=0.01, swa_lr=0.001, weight_decay=5e-07, amsgrad=True, scheduler='ReduceLROnPlateau', lr_factor=0.8, scheduler_patience=5, lr_scheduler_gamma=0.9993, swa=True, start_swa=600, ema=True, ema_decay=0.99, max_num_epochs=800, patience=5, foundation_model=None, foundation_model_readout=True, eval_interval=3, keep_checkpoints=False, save_all_checkpoints=False, restart_latest=False, save_cpu=False, clip_grad=10.0, wandb=False, wandb_dir=None, wandb_project='', wandb_entity='', wandb_name='', wandb_log_hypers=['num_channels', 'max_L', 'correlation', 'lr', 'swa_lr', 'weight_decay', 'batch_size', 'max_num_epochs', 'start_swa', 'energy_weight', 'forces_weight'])
+args model: MACE
+2024-11-15 16:22:56.376 INFO: ===========VERIFYING SETTINGS===========
+2024-11-15 16:22:56.376 INFO: MACE version: 0.3.7
+2024-11-15 16:22:56.591 INFO: CUDA version: 11.8, CUDA device: 0
+2024-11-15 16:22:56.729 INFO: ===========LOADING INPUT DATA===========
+2024-11-15 16:22:56.729 INFO: Using heads: ['default']
+2024-11-15 16:22:56.729 INFO: =============    Processing head default     ===========
+2024-11-15 16:22:56.749 WARNING: Since ASE version 3.23.0b1, using energy_key 'energy' is no longer safe when communicating between MACE and ASE. We recommend using a different key, rewriting 'energy' to 'REF_energy'. You need to use --energy_key='REF_energy' to specify the chosen key name.
+2024-11-15 16:22:56.750 WARNING: Since ASE version 3.23.0b1, using forces_key 'forces' is no longer safe when communicating between MACE and ASE. We recommend using a different key, rewriting 'forces' to 'REF_forces'. You need to use --forces_key='REF_forces' to specify the chosen key name.
+2024-11-15 16:22:56.752 INFO: Training set [10 configs, 10 energy, 480 forces] loaded from './custom_dataset/dimer_datasets/dimers_CP_train.xyz'
+2024-11-15 16:22:56.756 WARNING: Since ASE version 3.23.0b1, using energy_key 'energy' is no longer safe when communicating between MACE and ASE. We recommend using a different key, rewriting 'energy' to 'REF_energy'. You need to use --energy_key='REF_energy' to specify the chosen key name.
+2024-11-15 16:22:56.757 WARNING: Since ASE version 3.23.0b1, using forces_key 'forces' is no longer safe when communicating between MACE and ASE. We recommend using a different key, rewriting 'forces' to 'REF_forces'. You need to use --forces_key='REF_forces' to specify the chosen key name.
+2024-11-15 16:22:56.758 INFO: Validation set [3 configs, 3 energy, 144 forces] loaded from './custom_dataset/dimer_datasets/dimers_CP_test.xyz'
+2024-11-15 16:22:56.761 WARNING: Since ASE version 3.23.0b1, using energy_key 'energy' is no longer safe when communicating between MACE and ASE. We recommend using a different key, rewriting 'energy' to 'REF_energy'. You need to use --energy_key='REF_energy' to specify the chosen key name.
+2024-11-15 16:22:56.761 WARNING: Since ASE version 3.23.0b1, using forces_key 'forces' is no longer safe when communicating between MACE and ASE. We recommend using a different key, rewriting 'forces' to 'REF_forces'. You need to use --forces_key='REF_forces' to specify the chosen key name.
+2024-11-15 16:22:56.762 INFO: Test set (3 configs) loaded from './custom_dataset/dimer_datasets/dimers_CP_test.xyz':
+2024-11-15 16:22:56.762 INFO: Default_Default: 3 configs, 3 energy, 144 forces
+2024-11-15 16:22:56.762 INFO: Total number of configurations: train=10, valid=3, tests=[Default_Default: 3],
+2024-11-15 16:22:56.762 INFO: Atomic Numbers used: [1, 6, 8]
+2024-11-15 16:22:56.762 INFO: Isolated Atomic Energies (E0s) not in training file, using command line argument
+2024-11-15 16:22:56.762 INFO: Computing average Atomic Energies using least squares regression
+2024-11-15 16:22:56.763 INFO: Atomic Energies used (z: eV) for head default: {1: -886.5855785238405, 6: -394.0380348994849, 8: -295.5285261746135}
+2024-11-15 16:22:56.785 INFO: Computing average number of neighbors
+2024-11-15 16:22:56.996 INFO: Average number of neighbors: 9.75
+2024-11-15 16:22:56.997 INFO: During training the following quantities will be reported: energy, forces
+2024-11-15 16:22:56.997 INFO: ===========MODEL DETAILS===========
+2024-11-15 16:22:57.005 INFO: Building model
+2024-11-15 16:22:57.005 INFO: Message passing with 256 channels and max_L=2 (256x0e+256x1o+256x2e)
+2024-11-15 16:22:57.005 INFO: 2 layers, each with correlation order: 3 (body order: 4) and spherical harmonics up to: l=3
+2024-11-15 16:22:57.005 INFO: 8 radial and 5 basis functions
+2024-11-15 16:22:57.005 INFO: Radial cutoff: 6.0 A (total receptive field for each atom: 12.0 A)
+2024-11-15 16:22:57.005 INFO: Distance transform for radial basis functions: None
+2024-11-15 16:22:57.005 INFO: Hidden irreps: 256x0e+256x1o+256x2e
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/jit/_check.py:178: UserWarning: The TorchScript type system doesn't support instance-level annotations on empty non-base types in `__init__`. Instead, either 1) use a type annotation in the class body, or 2) wrap the type in `torch.jit.Attribute`.
+  warnings.warn(
+in the linear readout block 256x0e 16x0e 1
+2024-11-15 16:22:59.327 INFO: Total number of parameters: 3590672
+2024-11-15 16:22:59.327 INFO: 
+2024-11-15 16:22:59.327 INFO: ===========OPTIMIZER INFORMATION===========
+2024-11-15 16:22:59.327 INFO: Using ADAM as parameter optimizer
+2024-11-15 16:22:59.327 INFO: Batch size: 2
+2024-11-15 16:22:59.327 INFO: Using Exponential Moving Average with decay: 0.99
+2024-11-15 16:22:59.327 INFO: Number of gradient updates: 4000
+2024-11-15 16:22:59.327 INFO: Learning rate: 0.01, weight decay: 5e-07
+2024-11-15 16:22:59.327 INFO: WeightedEnergyForcesLoss(energy_weight=10.000, forces_weight=100.000)
+2024-11-15 16:22:59.328 INFO: Stage Two (after 600 epochs) with loss function: WeightedEnergyForcesLoss(energy_weight=100.000, forces_weight=10.000), with energy weight : 100.0, forces weight : 10.0 and learning rate : 0.001
+2024-11-15 16:22:59.429 INFO: Using gradient clipping with tolerance=10.000
+2024-11-15 16:22:59.429 INFO: 
+2024-11-15 16:22:59.429 INFO: ===========TRAINING===========
+2024-11-15 16:22:59.429 INFO: Started training, reporting errors on validation set
+2024-11-15 16:22:59.429 INFO: Loss metrics on validation set
+2024-11-15 16:22:59.694 INFO: node_feats: torch.Size([32, 2304])
+energy graph: torch.Size([2]) torch.Size([32])
+2024-11-15 16:22:59.774 INFO: node_feats: torch.Size([32, 256])
+energy graph: torch.Size([2]) torch.Size([32])
+2024-11-15 16:22:59.780 INFO: node_feats_out:torch.Size([32, 256]), torch.Size([2560]), 32
+Traceback (most recent call last):
+  File "/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha/./mace/cli/run_train.py", line 783, in <module>
+    main()
+  File "/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha/./mace/cli/run_train.py", line 64, in main
+    run(args)
+  File "/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha/./mace/cli/run_train.py", line 577, in run
+    tools.train(
+  File "/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha/mace/tools/train.py", line 183, in train
+    valid_loss_head, eval_metrics = evaluate(
+  File "/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha/mace/tools/train.py", line 411, in evaluate
+    output = model(
+  File "/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha/mace/modules/models.py", line 582, in forward
+    long_range_embedding = self.ewald_potential(node_feats)
+  File "/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/trace/group/mcgaughey/hariharr/miniconda3/envs/mace/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+TypeError: forward() missing 1 required positional argument: 'data'

@@ -46,7 +46,7 @@ def compute_average_E0s(
             atomic_energies_dict[z] = 0.0
     return atomic_energies_dict
 
-dimer_type = "PP"
+dimer_type = "CP"
 
 train_xyz = read("custom_dataset/dimer_datasets/dimers_"+dimer_type+"_train.xyz", ":")
 test_xyz = read("custom_dataset/dimer_datasets/dimers_"+dimer_type+"_test.xyz", ":")
@@ -63,8 +63,8 @@ for i in range(len(all_list)):
     true_energy.append(all_list[i].get_potential_energy())
     true_forces.append(all_list[i].get_forces().reshape(num_atoms_per_snapshot*3,))
 
-ground_state = avge0[1] * 10 + avge0[6] * 4 + avge0[7] * 2 + avge0[8] * 2
-print("ground state energies:", avge0)
+# ground_state = avge0[1] * 10 + avge0[6] * 4 + avge0[7] * 2 + avge0[8] * 2
+# print("ground state energies:", avge0)
 
 pred_energy, pred_forces = [], []
 calculator = MACECalculator(model_paths='./checkpoints/dimer-'+dimer_type+'-lr-remove-adjusted-mace_run-123_stagetwo.model', device='cuda')
