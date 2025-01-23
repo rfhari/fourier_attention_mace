@@ -3,15 +3,15 @@ import torch.nn as nn
 from itertools import product
 from typing import Dict
 import numpy as np
+from line_profiler import profile
 
 class EwaldPotential(nn.Module):
     def __init__(self,
                  dl=4.0,  # grid resolution
                  sigma=5.0,  # width of the Gaussian on each atom
                  remove_self_interaction=False,
-                #  feature_key: str = 'q',
-                #  output_key: str = 'ewald_potential',
                  aggregation_mode: str = "sum"):
+        
         super().__init__()
         self.dl = dl
         self.sigma = sigma
@@ -27,6 +27,7 @@ class EwaldPotential(nn.Module):
         self.k_sq_max = (self.twopi / self.dl) ** 2
 
     def forward(self, q_vector, k_vector, v_vector, data: Dict[str, torch.Tensor], **kwargs):
+        print("self.dl k-grid:", self.dl)
         print("q_vector from forward:", q_vector.shape)
         print("torch.isfinite(q_vector).all():", torch.isfinite(q_vector).all(), "torch.isnan(q_vector).any():", torch.isnan(q_vector).all())
         print("torch.isfinite(k_vector).all():", torch.isfinite(k_vector).all(), "torch.isnan(k_vector).any():", torch.isnan(k_vector).all())
@@ -40,11 +41,7 @@ class EwaldPotential(nn.Module):
         
         box = data['cell'].view(-1, 3, 3).diagonal(dim1=-2, dim2=-1)
         r = data['positions']
-        # q = data[self.feature_key]
-        # if q.dim() == 1:
-        #     q = q.unsqueeze(1)
 
-        # Check the input dimension
         n, d = r.shape
         assert d == 3, 'r dimension error'
         assert n == q_vector.size(0), 'q dimension error'
@@ -62,41 +59,23 @@ class EwaldPotential(nn.Module):
             q_pot = self.compute_potential_optimized(r[mask], q_vector[mask], box[i], 'q')
             print("q_pot:", q_pot.shape, k_pot.shape, v_pot.shape)
 
-            # node_feats_list = []
-            # for ind in range(q_pot.shape[1]): #iterate across atoms in given unitcell 
-            #     q_atom = q_pot[:, ind, :]
-            #     print("q_atom:", q_atom.shape)
-            #     intermediate = q_atom @ torch.transpose(k_pot, 0, 1) #include softmax
-            #     attention_weights = intermediate @ v_pot
-            #     print("intermediate:", intermediate.shape)
-            #     print("attention_weights:", attention_weights.shape, r[mask][ind])
-            #     # attention_list.append(attention_weights)
-            #     real_space_node_feats = self.compute_inverse_transform(r[mask][ind, :], attention_weights, box[i])
-            #     node_feats_list.append(real_space_node_feats.reshape(-1,))
-            # node_feats_list = torch.stack(node_feats_list, dim=0)
-
             attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(torch.abs(q_pot), 1, 2), torch.abs(k_pot))
-            print("i:", i, "q_pot dtype:", q_pot.dtype, "torch.isfinite(q_pot).all():", torch.isfinite(q_pot).all(), "torch.isnan(q_pot).any():", torch.isnan(q_pot).all(), "min. {:.5f}, max. {:.5f}".format(q_pot.real.min(), q_pot.real.max()))
-            print("i:", i, "k_pot dtype:", k_pot.dtype, "torch.isfinite(k_pot).all():", torch.isfinite(k_pot).all(), "torch.isnan(k_pot).any():", torch.isnan(k_pot).all(), "min. {:.5f}, max. {:.5f}".format(k_pot.real.min(), k_pot.real.max()))
-            print("i:", i, "v_pot dtype:", v_pot.dtype, "torch.isfinite(v_pot).all():", torch.isfinite(v_pot).all(), "torch.isnan(v_pot).any():", torch.isnan(v_pot).all(), "min. {:.5f}, max. {:.5f}".format(v_pot.real.min(), v_pot.real.max()))
+            # print("i:", i, "q_pot dtype:", q_pot.dtype, "torch.isfinite(q_pot).all():", torch.isfinite(q_pot).all(), "torch.isnan(q_pot).any():", torch.isnan(q_pot).all(), "min. {:.5f}, max. {:.5f}".format(q_pot.real.min(), q_pot.real.max()))
+            # print("i:", i, "k_pot dtype:", k_pot.dtype, "torch.isfinite(k_pot).all():", torch.isfinite(k_pot).all(), "torch.isnan(k_pot).any():", torch.isnan(k_pot).all(), "min. {:.5f}, max. {:.5f}".format(k_pot.real.min(), k_pot.real.max()))
+            # print("i:", i, "v_pot dtype:", v_pot.dtype, "torch.isfinite(v_pot).all():", torch.isfinite(v_pot).all(), "torch.isnan(v_pot).any():", torch.isnan(v_pot).all(), "min. {:.5f}, max. {:.5f}".format(v_pot.real.min(), v_pot.real.max()))
 
             real_attention_weights = torch.real(attention_weights)
             # attention_weights = attention_weights / torch.sqrt(torch.tensor(k_pot.shape[1], dtype=torch.float))
-            print("i:", i, "attention_weights dtype:", attention_weights.dtype, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", 
-            torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
+            print("i:", i, "attention_weights dtype:", attention_weights.dtype, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
 
             max_values, _ = torch.max(real_attention_weights, dim=-1, keepdim=True)
             shifted_attention_weights = real_attention_weights - max_values
 
-            softmax_attention_weights = torch.softmax(shifted_attention_weights, dim=-1)
-            print("i:", i, "softmax_attention_weights dtype:", softmax_attention_weights.dtype, "torch.isfinite(softmax_attention_weights).all():", torch.isfinite(softmax_attention_weights).all(), "torch.isnan(softmax_attention_weights).any():", torch.isnan(softmax_attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(softmax_attention_weights.real.min(), softmax_attention_weights.real.max()))
-            print("attention_weights after softmax:", attention_weights.shape, max_values.shape, shifted_attention_weights.shape)
+            log_attention_weights = torch.log_softmax(shifted_attention_weights, dim=-1)
+            softmax_attention_weights = torch.exp(log_attention_weights)
 
             weighted_values = softmax_attention_weights[:, :, None] * v_pot[None, :, :]
-            print("weighted_values:", weighted_values.shape)
-            print("i:", i, "torch.isfinite(weighted_values).all():", torch.isfinite(weighted_values).all(), "torch.isnan(weighted_values).any():", torch.isnan(weighted_values).all(), "min. {:.5f}, max. {:.5f}".format(weighted_values.real.min(), weighted_values.real.max()))
             real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask], weighted_values, box[i])
-            print("i:", i, "torch.isfinite(real_space_weighted_values).all():", torch.isfinite(real_space_weighted_values).all(), "torch.isnan(real_space_weighted_values).any():", torch.isnan(real_space_weighted_values).all(), "min. {:.5f}, max. {:.5f}".format(real_space_weighted_values.real.min(), real_space_weighted_values.real.max()))
 
             print("node_feats_list:", weighted_values.shape, real_space_weighted_values.shape)
             results.append(torch.real(real_space_weighted_values))
@@ -105,140 +84,6 @@ class EwaldPotential(nn.Module):
         print("results:", results.shape)       
         return results
 
-    def compute_potential(self, r_raw, q, box, value):
-        dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
-        device = r_raw.device
-
-        r = r_raw / box  # Work with scaled positions
-        # r =  r - torch.round(r) # periodic boundary condition
-
-        # Calculate nk based on the provided box dimensions and resolution
-        nk = (box / self.dl).int().tolist()
-        print("nk:", nk)
-        
-        for i in range(3):
-            if nk[i] < 1: nk[i] = 1
-        
-        n = r.shape[0]
-        eikx = torch.zeros((n, nk[0] + 1), dtype=dtype, device=device)
-        eiky = torch.zeros((n, 2 * nk[1] + 1), dtype=dtype, device=device)
-        eikz = torch.zeros((n, 2 * nk[2] + 1), dtype=dtype, device=device)
-
-        eikx[:, 0] = torch.ones(n, dtype=dtype, device=device)
-        eiky[:, nk[1]] = torch.ones(n, dtype=dtype, device=device)
-        eikz[:, nk[2]] = torch.ones(n, dtype=dtype, device=device)
-
-        # Calculate remaining positive kx, ky, and kz terms by recursion
-        for k in range(1, nk[0] + 1):
-            eikx[:, k] = torch.exp(-1j * self.twopi * k * r[:, 0]) 
-        for k in range(1, nk[1] + 1):
-            eiky[:, nk[1] + k] = torch.exp(-1j * self.twopi * k * r[:, 1])
-        for k in range(1, nk[2] + 1):
-            eikz[:, nk[2] + k] = torch.exp(-1j * self.twopi * k * r[:, 2])
-
-        # Negative k values are complex conjugates of positive ones
-        for k in range(nk[1]):
-            eiky[:, k] = torch.conj(eiky[:, 2 * nk[1] - k])
-        for k in range(nk[2]):
-            eikz[:, k] = torch.conj(eikz[:, 2 * nk[2] - k])
-
-        pot_list, term_list, counter = [], [], 0
-        print("kx, ky, kz", eikx.shape, eiky.shape, eikz.shape)
-        for kx in range(nk[0] + 1):
-            factor = 1.0 if kx == 0 else 2.0
-
-            for ky, kz in product(range(-nk[1], nk[1] + 1), range(-nk[2], nk[2] + 1)):
-                k_sq = self.twopi_sq * ((kx / box[0]) ** 2 + (ky / box[1]) ** 2 + (kz / box[2]) ** 2)
-                if k_sq <= self.k_sq_max and k_sq > 0:  # remove the k=0 term
-                    kfac = torch.exp(-self.sigma_sq_half * k_sq) / k_sq
-                    term = torch.sum(q * (eikx[:, kx].unsqueeze(1) * eiky[:, nk[1] + ky].unsqueeze(1) * eikz[:, nk[2] + kz].unsqueeze(1)), dim=0)
-                    term_before_sum = q * (eikx[:, kx].unsqueeze(1) * eiky[:, nk[1] + ky].unsqueeze(1) * eikz[:, nk[2] + kz].unsqueeze(1))
-                    term_list.append(term_before_sum)
-                    counter+=1
-                    # pot_list.append(factor * kfac * torch.real(torch.conj(term) * term))
-        term_list = torch.stack(term_list, dim=0) #shape of [k-vectors, atoms, features]
-        
-        if value=='v' or value == 'k':
-            sum_term = torch.sum(term_list, dim=1)
-        else:
-            sum_term = term_list
-        
-        print("values in FT block:", counter, term.shape, term_before_sum.shape, term_list.shape, sum_term.shape)   
-        # print(torch.real(term))
-        # pot = torch.stack(pot_list).sum(axis=0) / (box[0] * box[1] * box[2])
-        
-
-        # if self.remove_self_interaction:
-        #     pot -= torch.sum(q ** 2) / (self.sigma * self.twopi**(3./2.))
-
-        return sum_term #torch.real(torch.conj(term) * term)
-    
-    def compute_inverse_transform(self, r_raw, q, box):
-        # r_raw = r_raw.reshape(1, -1)
-        dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
-        device = r_raw.device
-
-        r = r_raw / box  # Work with scaled positions
-        # r =  r - torch.round(r) # periodic boundary condition
-
-        # Calculate nk based on the provided box dimensions and resolution
-        nk = (box / self.dl).int().tolist()
-        print("IFT nk:", nk, r.shape, q.shape, box, self.dl, self.k_sq_max)
-        
-        for i in range(3):
-            if nk[i] < 1: nk[i] = 1
-        
-        n = r.shape[0]
-        eikx = torch.zeros((n, nk[0] + 1), dtype=dtype, device=device)
-        eiky = torch.zeros((n, 2 * nk[1] + 1), dtype=dtype, device=device)
-        eikz = torch.zeros((n, 2 * nk[2] + 1), dtype=dtype, device=device)
-
-        eikx[:, 0] = torch.ones(n, dtype=dtype, device=device)
-        eiky[:, nk[1]] = torch.ones(n, dtype=dtype, device=device)
-        eikz[:, nk[2]] = torch.ones(n, dtype=dtype, device=device)
-
-        # Calculate remaining positive kx, ky, and kz terms by recursion
-        for k in range(1, nk[0] + 1):
-            eikx[:, k] = torch.exp(1j * self.twopi * k * r[:, 0]) 
-        for k in range(1, nk[1] + 1):
-            eiky[:, nk[1] + k] = torch.exp(1j * self.twopi * k * r[:, 1])
-        for k in range(1, nk[2] + 1):
-            eikz[:, nk[2] + k] = torch.exp(1j * self.twopi * k * r[:, 2])
-
-        # Negative k values are complex conjugates of positive ones
-        for k in range(nk[1]):
-            eiky[:, k] = torch.conj(eiky[:, 2 * nk[1] - k])
-        for k in range(nk[2]):
-            eikz[:, k] = torch.conj(eikz[:, 2 * nk[2] - k])
-
-        pot_list, term_list, counter = [], [], 0
-        print("IFT kx, ky, kz", eikx.shape, q[counter, :].shape, eiky.shape, eikz.shape)
-        for kx in range(nk[0] + 1):
-            factor = 1.0 if kx == 0 else 2.0
-            # print("IFT kx:", eikx[:, kx].unsqueeze(1).shape)
-            for ky, kz in product(range(-nk[1], nk[1] + 1), range(-nk[2], nk[2] + 1)):
-                k_sq = self.twopi_sq * ((kx / box[0]) ** 2 + (ky / box[1]) ** 2 + (kz / box[2]) ** 2)
-                if k_sq <= self.k_sq_max and k_sq > 0:  # remove the k=0 term
-                    # kfac = torch.exp(-self.sigma_sq_half * k_sq) / k_sq
-                    term = torch.sum(q[counter, :].reshape(-1) * (eikx[:, kx].unsqueeze(1) * eiky[:, nk[1] + ky].unsqueeze(1) * eikz[:, nk[2] + kz].unsqueeze(1)), dim=0)
-                    term_before_sum = q[counter, :].reshape(-1) * (eikx[:, kx].unsqueeze(1) * eiky[:, nk[1] + ky].unsqueeze(1) * eikz[:, nk[2] + kz].unsqueeze(1))
-                    term_list.append(term_before_sum)
-                    counter+=1
-                    # pot_list.append(factor * kfac * torch.real(torch.conj(term) * term))
-        term_list = torch.stack(term_list, dim=0) # shape of [k-vectors, atoms, features]
-        sum_term = torch.sum(term_list, dim=0)
-        print("values in IFT block:", counter, term.shape, term_before_sum.shape, term_list.shape, sum_term.shape)
-        # print("IFT sum term:", sum_term)   
-        # print(torch.real(term))
-        # pot = torch.stack(pot_list).sum(axis=0) / (box[0] * box[1] * box[2])
-        
-
-        # if self.remove_self_interaction:
-        #     pot -= torch.sum(q ** 2) / (self.sigma * self.twopi**(3./2.))
-
-        return torch.real(sum_term2) #torch.real(torch.conj(term) * term)
-
-    # Optimized function
     def compute_potential_optimized(self, r_raw, q, box, vector_type):
         dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
         device = r_raw.device
@@ -256,7 +101,7 @@ class EwaldPotential(nn.Module):
         eikx[:, 1] = torch.exp(1j * self.twopi * r[:, 0])
         eiky[:, nk[1] + 1] = torch.exp(1j * self.twopi * r[:, 1])
         eikz[:, nk[2] + 1] = torch.exp(1j * self.twopi * r[:, 2])
-        # Calculate remaining positive kx, ky, and kz terms by recursion
+
         for k in range(2, nk[0] + 1):
             eikx[:, k] = eikx[:, k - 1].clone() * eikx[:, 1].clone()
         for k in range(2, nk[1] + 1):
@@ -264,7 +109,6 @@ class EwaldPotential(nn.Module):
         for k in range(2, nk[2] + 1):
             eikz[:, nk[2] + k] = eikz[:, nk[2] + k - 1].clone() * eikz[:, nk[2] + 1].clone()
 
-        # Negative k values are complex conjugates of positive ones
         for k in range(nk[1]):
             eiky[:, k] = torch.conj(eiky[:, 2 * nk[1] - k])
         for k in range(nk[2]):
@@ -303,8 +147,8 @@ class EwaldPotential(nn.Module):
             raise ValueError("q must be 1D or 2D tensor")
         
         k_vectors = mask.nonzero()
-        print("k_vectors shape:", k_vectors.shape, torch.max(k_vectors, dim=0), torch.min(k_vectors, dim=0))
-        print("k_vectors dtype:", k_vectors.dtype)
+        print("box size:", box)
+        print("k_vectors shape and dtype:", k_vectors.shape, k_vectors.dtype)
 
         value = q_expanded * (eikx_expanded * eiky_expanded * eikz_expanded).unsqueeze(1)
         print("value from optimized ewald sum:", value.shape)
@@ -335,8 +179,8 @@ class EwaldPotential(nn.Module):
 
         return return_val #pot.real * self.norm_factor
 
+    @profile
     def compute_inverse_transform_optimized(self, r_raw, q, box):
-        # r_raw = r_raw.reshape(1,-1)
         dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
         device = r_raw.device
 
@@ -354,7 +198,7 @@ class EwaldPotential(nn.Module):
         eikx[:, 1] = torch.exp(-1j * self.twopi * r[:, 0])
         eiky[:, nk[1] + 1] = torch.exp(-1j * self.twopi * r[:, 1])
         eikz[:, nk[2] + 1] = torch.exp(-1j * self.twopi * r[:, 2])
-        # Calculate remaining positive kx, ky, and kz terms by recursion
+
         for k in range(2, nk[0] + 1):
             eikx[:, k] = eikx[:, k - 1].clone() * eikx[:, 1].clone()
         for k in range(2, nk[1] + 1):
@@ -362,7 +206,6 @@ class EwaldPotential(nn.Module):
         for k in range(2, nk[2] + 1):
             eikz[:, nk[2] + k] = eikz[:, nk[2] + k - 1].clone() * eikz[:, nk[2] + 1].clone()
 
-        # Negative k values are complex conjugates of positive ones
         for k in range(nk[1]):
             eiky[:, k] = torch.conj(eiky[:, 2 * nk[1] - k])
         for k in range(nk[2]):
@@ -389,11 +232,12 @@ class EwaldPotential(nn.Module):
         eikz_valid = eikz[:, nk[2] + kz_valid]
         
         q_valid = q[:, :len(kx_valid), :]
-
-        print("shapes of q:", q.shape, torch.allclose(q_valid, q))
+        print("q, torch.isfinite(q).all():", torch.isfinite(q).all(), "torch.isnan(q).any():", torch.isnan(q).all(), "min. {:.5f}, max. {:.5f}".format(q.real.min(), q.real.max()))
+        print("eikx_valid, torch.isfinite(eikx_valid).all():", torch.isfinite(eikx_valid).all(), "torch.isnan(eikx_valid).any():", torch.isnan(eikx_valid).all(), "min. {:.5f}, max. {:.5f}".format(eikx_valid.real.min(), eikx_valid.real.max()))
+        print("eiky_valid, torch.isfinite(eiky_valid).all():", torch.isfinite(eiky_valid).all(), "torch.isnan(eiky_valid).any():", torch.isnan(eiky_valid).all(), "min. {:.5f}, max. {:.5f}".format(eiky_valid.real.min(), eiky_valid.real.max()))
+        print("eikz_valid, torch.isfinite(eikz_valid).all():", torch.isfinite(eikz_valid).all(), "torch.isnan(eikz_valid).any():", torch.isnan(eikz_valid).all(), "min. {:.5f}, max. {:.5f}".format(eikz_valid.real.min(), eikz_valid.real.max()))
 
         term_before_sum = q.unsqueeze(2) * eikx_valid.unsqueeze(2).unsqueeze(3) * eiky_valid.unsqueeze(2).unsqueeze(3) * eikz_valid.unsqueeze(2).unsqueeze(3)
-
         new_sum_term = torch.sum(term_before_sum, dim=1).reshape(n, -1)
 
         print("new_sum_term:", new_sum_term.shape, n) #[atoms, features]

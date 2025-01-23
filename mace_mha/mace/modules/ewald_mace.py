@@ -80,34 +80,62 @@ class EwaldPotential(nn.Module):
             mask = batch_now == i  # Create a mask for the i-th configuration
             qkv_masked = qkv[mask].permute(1, 0, 2)   
             q_vector_mha, k_vector_mha, v_vector_mha = qkv_masked.chunk(3, dim=-1)     
-            print("vectors after split:", q_vector_mha.shape, k_vector_mha.shape, v_vector_mha.shape)
-            all_head_weighted_values = []
+            print("mha vectors after split:", q_vector_mha.shape, k_vector_mha.shape, v_vector_mha.shape)
+            # all_head_weighted_values = []
 
-            for head_ind in range(q_vector_mha.shape[0]):
-                q_vector, k_vector, v_vector = q_vector_mha[head_ind, :, :], k_vector_mha[head_ind, :, :], v_vector_mha[head_ind, :, :]
-                print("vectors after split:", q_vector.shape, k_vector.shape, v_vector.shape)
-                print("qkv after permute:", qkv.shape)    
+            # for head_ind in range(q_vector_mha.shape[0]):
+            #     q_vector, k_vector, v_vector = q_vector_mha[head_ind, :, :], k_vector_mha[head_ind, :, :], v_vector_mha[head_ind, :, :]
+            #     print("single head vectors after split:", q_vector.shape, k_vector.shape, v_vector.shape)
+            #     print("qkv after permute:", qkv.shape)    
 
-                k_pot = self.compute_potential_optimized(r[mask], k_vector, box[i], 'k')
-                v_pot = self.compute_potential_optimized(r[mask], v_vector, box[i], 'v')
-                q_pot = self.compute_potential_optimized(r[mask], q_vector, box[i], 'q')
-                print("q_pot:", q_pot.shape, k_pot.shape, v_pot.shape)
+            #     k_pot = self.compute_potential_optimized(r[mask], k_vector, box[i], 'k')
+            #     v_pot = self.compute_potential_optimized(r[mask], v_vector, box[i], 'v')
+            #     q_pot = self.compute_potential_optimized(r[mask], q_vector, box[i], 'q')
+            #     print("q_pot in each head:", q_pot.shape, k_pot.shape, v_pot.shape)
 
-                attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(torch.abs(q_pot), 1, 2), torch.abs(k_pot))
+            #     attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(q_pot, 1, 2), k_pot)
 
-                real_attention_weights = torch.real(attention_weights)
+            #     real_attention_weights = torch.real(attention_weights)
 
-                max_values, _ = torch.max(real_attention_weights, dim=-1, keepdim=True)
-                shifted_attention_weights = real_attention_weights - max_values
+            #     max_values, _ = torch.max(real_attention_weights, dim=-1, keepdim=True)
+            #     shifted_attention_weights = real_attention_weights - max_values
 
-                softmax_attention_weights = torch.softmax(shifted_attention_weights, dim=-1)
+            #     softmax_attention_weights = torch.softmax(shifted_attention_weights, dim=-1)
 
-                weighted_values = softmax_attention_weights[:, :, None] * v_pot[None, :, :]
-                all_head_weighted_values.append(weighted_values)
+            #     weighted_values = softmax_attention_weights[:, :, None] * v_pot[None, :, :]
+            #     all_head_weighted_values.append(weighted_values)
 
-            all_head_weighted_values = torch.cat(all_head_weighted_values, dim=-1)
-            print("weighted_values before ift:", all_head_weighted_values.shape, weighted_values.shape)
-            real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask], all_head_weighted_values, box[i])
+            # all_head_weighted_values = torch.cat(all_head_weighted_values, dim=-1)
+            # print("weighted_values before ift:", all_head_weighted_values.shape, softmax_attention_weights.shape, weighted_values.shape)
+
+# ---------------------- efficient implementation -------------------------------
+            num_heads, n_atoms, head_dim = q_vector_mha.shape
+            
+            q_vector_flat = q_vector_mha.reshape(-1, head_dim)
+            k_vector_flat = k_vector_mha.reshape(-1, head_dim)
+            v_vector_flat = v_vector_mha.reshape(-1, head_dim)
+            print("flattened vector:", q_vector_flat.shape, k_vector_flat.shape, v_vector_flat.shape)
+
+            k_pot = self.compute_potential_optimized(r[mask], k_vector_flat, box[i], 'k', num_heads)
+            v_pot = self.compute_potential_optimized(r[mask], v_vector_flat, box[i], 'v', num_heads)
+            q_pot = self.compute_potential_optimized(r[mask], q_vector_flat, box[i], 'q', num_heads)
+            print("efficient implementation q_pot:", q_pot.shape, k_pot.shape, v_pot.shape)
+
+            efficient_attention_weights = torch.einsum('hijk,hjk->hij', torch.abs(q_pot).transpose(2, 3), torch.abs(k_pot))
+            efficient_real_attention_weights = torch.real(efficient_attention_weights)
+
+            efficient_max_values, _ = torch.max(efficient_real_attention_weights, dim=-1, keepdim=True)
+            efficient_shifted_attention_weights = efficient_real_attention_weights - efficient_max_values
+            efficient_softmax_attention_weights = torch.softmax(efficient_shifted_attention_weights, dim=-1)
+            efficient_weighted_values = efficient_softmax_attention_weights.unsqueeze(-1) * v_pot.unsqueeze(1)
+            efficient_weighted_values = efficient_weighted_values.permute(1, 2, 0, 3).reshape(n_atoms, k_pot.shape[1], -1) 
+
+            print("efficient_weighted_values:", efficient_weighted_values.shape)
+# ---------------------- efficient implementation -------------------------------
+
+            # print("weighted_values before ift:", all_head_weighted_values.shape, efficient_weighted_values.shape)
+            # print("weighted_values comparison before ift:", torch.allclose(all_head_weighted_values, efficient_weighted_values))
+            real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask], efficient_weighted_values, box[i])
             print("weighted_values after ift:", real_space_weighted_values.shape)
 
             results.append(torch.real(real_space_weighted_values))
@@ -157,7 +185,6 @@ class EwaldPotential(nn.Module):
         print("kx, ky, kz", eikx.shape, eiky.shape, eikz.shape)
         for kx in range(nk[0] + 1):
             factor = 1.0 if kx == 0 else 2.0
-
             for ky, kz in product(range(-nk[1], nk[1] + 1), range(-nk[2], nk[2] + 1)):
                 k_sq = self.twopi_sq * ((kx / box[0]) ** 2 + (ky / box[1]) ** 2 + (kz / box[2]) ** 2)
                 if k_sq <= self.k_sq_max and k_sq > 0:  # remove the k=0 term
@@ -208,7 +235,6 @@ class EwaldPotential(nn.Module):
         eiky[:, nk[1]] = torch.ones(n, dtype=dtype, device=device)
         eikz[:, nk[2]] = torch.ones(n, dtype=dtype, device=device)
 
-        # Calculate remaining positive kx, ky, and kz terms by recursion
         for k in range(1, nk[0] + 1):
             eikx[:, k] = torch.exp(1j * self.twopi * k * r[:, 0]) 
         for k in range(1, nk[1] + 1):
@@ -216,7 +242,6 @@ class EwaldPotential(nn.Module):
         for k in range(1, nk[2] + 1):
             eikz[:, nk[2] + k] = torch.exp(1j * self.twopi * k * r[:, 2])
 
-        # Negative k values are complex conjugates of positive ones
         for k in range(nk[1]):
             eiky[:, k] = torch.conj(eiky[:, 2 * nk[1] - k])
         for k in range(nk[2]):
@@ -239,6 +264,7 @@ class EwaldPotential(nn.Module):
         term_list = torch.stack(term_list, dim=0) # shape of [k-vectors, atoms, features]
         sum_term = torch.sum(term_list, dim=0)
         print("values in IFT block:", counter, term.shape, term_before_sum.shape, term_list.shape, sum_term.shape)
+
         # print("IFT sum term:", sum_term)   
         # print(torch.real(term))
         # pot = torch.stack(pot_list).sum(axis=0) / (box[0] * box[1] * box[2])
@@ -250,16 +276,19 @@ class EwaldPotential(nn.Module):
         return torch.real(sum_term2) #torch.real(torch.conj(term) * term)
 
     # Optimized function
-    def compute_potential_optimized(self, r_raw, q, box, vector_type):
+    def compute_potential_optimized(self, r_raw, q, box, vector_type, num_heads=1):
         dtype = torch.complex64 if r_raw.dtype == torch.float32 else torch.complex128
         device = r_raw.device
 
         r = r_raw / box
+        r = r.repeat(num_heads, 1)
 
         nk = (box / self.dl).int().tolist()
         nk = [max(1, k) for k in nk]
 
         n = r.shape[0]
+        print("num_heads and n:", num_heads, n)
+
         eikx = torch.ones((n, nk[0] + 1), dtype=dtype, device=device)
         eiky = torch.ones((n, 2 * nk[1] + 1), dtype=dtype, device=device)
         eikz = torch.ones((n, 2 * nk[2] + 1), dtype=dtype, device=device)
@@ -267,7 +296,7 @@ class EwaldPotential(nn.Module):
         eikx[:, 1] = torch.exp(1j * self.twopi * r[:, 0])
         eiky[:, nk[1] + 1] = torch.exp(1j * self.twopi * r[:, 1])
         eikz[:, nk[2] + 1] = torch.exp(1j * self.twopi * r[:, 2])
-        # Calculate remaining positive kx, ky, and kz terms by recursion
+
         for k in range(2, nk[0] + 1):
             eikx[:, k] = eikx[:, k - 1].clone() * eikx[:, 1].clone()
         for k in range(2, nk[1] + 1):
@@ -275,7 +304,6 @@ class EwaldPotential(nn.Module):
         for k in range(2, nk[2] + 1):
             eikz[:, nk[2] + k] = eikz[:, nk[2] + k - 1].clone() * eikz[:, nk[2] + 1].clone()
 
-        # Negative k values are complex conjugates of positive ones
         for k in range(nk[1]):
             eiky[:, k] = torch.conj(eiky[:, 2 * nk[1] - k])
         for k in range(nk[2]):
@@ -296,15 +324,15 @@ class EwaldPotential(nn.Module):
         k_sq = self.twopi_sq * (kx_sq + ky_sq + kz_sq)
         mask = (k_sq <= self.k_sq_max) & (k_sq > 0)
 
-        kfac = torch.exp(-self.sigma_sq_half * k_sq) / k_sq
-        kfac[~mask] = 0
+        # kfac = torch.exp(-self.sigma_sq_half * k_sq) / k_sq
+        # kfac[~mask] = 0
 
         eikx_expanded = eikx.unsqueeze(2).unsqueeze(3)
         eiky_expanded = eiky.unsqueeze(1).unsqueeze(3)
         eikz_expanded = eikz.unsqueeze(1).unsqueeze(2)
 
-        factor = torch.ones_like(kx, dtype=dtype, device=device)
-        factor[1:] = 2.0
+        # factor = torch.ones_like(kx, dtype=dtype, device=device)
+        # factor[1:] = 2.0
 
         if q.dim() == 1:
             q_expanded = q.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4)
@@ -314,8 +342,7 @@ class EwaldPotential(nn.Module):
             raise ValueError("q must be 1D or 2D tensor")
         
         k_vectors = mask.nonzero()
-        print("k_vectors shape:", k_vectors.shape, torch.max(k_vectors, dim=0), torch.min(k_vectors, dim=0))
-        print("k_vectors dtype:", k_vectors.dtype)
+        print("k_vectors, q_expanded and eikx_expanded shape:", k_vectors.shape, q_expanded.shape, eikx_expanded.shape, eiky_expanded.shape, eikz_expanded.shape)
 
         value = q_expanded * (eikx_expanded * eiky_expanded * eikz_expanded).unsqueeze(1)
         print("value from optimized ewald sum:", value.shape)
@@ -327,24 +354,27 @@ class EwaldPotential(nn.Module):
         term_before_sum = value[:, :, k_vectors_adjusted[:, 0], k_vectors_adjusted[:, 1], k_vectors_adjusted[:, 2]]
         # term_before_sum = value[:, :, k_vectors[:, 0], k_vectors[:, 1], k_vectors[:, 2]]
         
-        term = term_before_sum.sum(dim=0)
-        term = term.transpose(0, 1)
-
-        if vector_type == 'v' or vector_type == 'k':
-            print("term from value or key:", term_before_sum.shape, value.shape, term.shape)
-            return_val = term
+        if num_heads>1:
+            if vector_type == 'v' or vector_type == 'k':
+                term_before_sum = term_before_sum.view(num_heads, r_raw.shape[0], *term_before_sum.shape[1:])
+                term = term_before_sum.sum(dim=1)
+                term = term.transpose(1, 2)
+                print("term from value or key:", term_before_sum.shape, value.shape, term.shape)
+                return_val = term
+            else:
+                print("term from query:", term_before_sum.shape, value.shape)
+                return_val = term_before_sum.view(num_heads, r_raw.shape[0], *term_before_sum.shape[1:])            
         else:
-            print("term from query:", term_before_sum.shape, value.shape, term.shape)
-            return_val = term_before_sum
+            if vector_type == 'v' or vector_type == 'k':
+                term = term_before_sum.sum(dim=0)
+                term = term.transpose(0, 1)
+                print("term from value or key:", term_before_sum.shape, value.shape, term.shape)
+                return_val = term
+            else:
+                print("term from query:", term_before_sum.shape, value.shape)
+                return_val = term_before_sum
 
-        # pot = (kfac.unsqueeze(0) * factor.view(1, -1, 1, 1) * torch.real(torch.conj(term) * term)).sum(dim=[1, 2, 3])
-
-        # pot /= (box[0] * box[1] * box[2])
-
-        # if self.remove_self_interaction:
-        #     pot -= torch.sum(q ** 2) / (self.sigma * self.twopi**(3./2.))
-
-        return return_val #pot.real * self.norm_factor
+        return return_val 
 
     def compute_inverse_transform_optimized(self, r_raw, q, box):
         # r_raw = r_raw.reshape(1,-1)
@@ -365,6 +395,7 @@ class EwaldPotential(nn.Module):
         eikx[:, 1] = torch.exp(-1j * self.twopi * r[:, 0])
         eiky[:, nk[1] + 1] = torch.exp(-1j * self.twopi * r[:, 1])
         eikz[:, nk[2] + 1] = torch.exp(-1j * self.twopi * r[:, 2])
+
         # Calculate remaining positive kx, ky, and kz terms by recursion
         for k in range(2, nk[0] + 1):
             eikx[:, k] = eikx[:, k - 1].clone() * eikx[:, 1].clone()
@@ -408,40 +439,6 @@ class EwaldPotential(nn.Module):
         new_sum_term = torch.sum(term_before_sum, dim=1).reshape(n, -1)
 
         print("new_sum_term:", new_sum_term.shape, n) #[atoms, features]
-
-        # kfac = torch.exp(-sigma_sq_half * k_sq) / k_sq
-        # kfac[~mask] = 0
-
-        # eikx_expanded = eikx.unsqueeze(2).unsqueeze(3)
-        # eiky_expanded = eiky.unsqueeze(1).unsqueeze(3)
-        # eikz_expanded = eikz.unsqueeze(1).unsqueeze(2)
-
-        # factor = torch.ones_like(kx, dtype=dtype, device=device)
-        # factor[1:] = 2.0
-
-        # if q.dim() == 1:
-        #     q_expanded = q.unsqueeze(1).unsqueeze(2).unsqueeze(3).unsqueeze(4)
-        # elif q.dim() == 2:
-        #     q_expanded = q.unsqueeze(2).unsqueeze(3).unsqueeze(4)
-        # else:
-        #     raise ValueError("q must be 1D or 2D tensor")
-
-        # k_vectors = mask.nonzero()
-        # print("eikx, eiky, eikz shape:", eikx.shape, eiky.shape, eikz.shape, k_sq.shape,  mask.nonzero().shape)
-        # print("k_vectors shape:", k_vectors.shape, torch.max(k_vectors, dim=0), torch.min(k_vectors, dim=0))
-
-        # value = q_expanded * (eikx_expanded * eiky_expanded * eikz_expanded).unsqueeze(1)
-        # term_before_sum = q_valid.unsqueeze(2) * eikx_valid.unsqueeze(2).unsqueeze(3) * eiky_valid.unsqueeze(2).unsqueeze(3) * eikz_valid.unsqueeze(2).unsqueeze(3)
-        # new_sum_term = torch.sum(term_before_sum, dim=1)
-
-        # print("value from optimized ewald sum:", term_before_sum.shape, new_sum_term.shape)
-
-        # k_vectors_adjusted = k_vectors - 1
-        # term = torch.stack([value[:, :, kx-1, ky-1, kz-1].sum(dim=0) for kx, ky, kz in k_vectors])
-        # term = term.transpose(0, 1)
-        # term_before_sum = value[:, :, k_vectors_adjusted[:, 0], k_vectors_adjusted[:, 1], k_vectors_adjusted[:, 2]]
-        # term = value.sum(dim=[2, 3, 4])
-        # term = term.transpose(0, 1)
 
         return_val = new_sum_term
 

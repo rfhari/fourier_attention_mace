@@ -35,6 +35,7 @@ def compute_average_E0s(
     try:
         E0s = np.linalg.lstsq(A, B, rcond=None)[0]
         atomic_energies_dict = {}
+        count_atom_types = {}
         for i, z in enumerate(zs):
             atomic_energies_dict[z] = E0s[i]
     except np.linalg.LinAlgError:
@@ -44,17 +45,20 @@ def compute_average_E0s(
         atomic_energies_dict = {}
         for i, z in enumerate(zs):
             atomic_energies_dict[z] = 0.0
-    return atomic_energies_dict
 
-dimer_type = "CP"
+    return atomic_energies_dict, A[0, :]
 
-train_xyz = read("custom_dataset/dimer_datasets/dimers_"+dimer_type+"_train.xyz", ":")
-test_xyz = read("custom_dataset/dimer_datasets/dimers_"+dimer_type+"_test.xyz", ":")
+dimer_type = "PP"
+dimer_ID = str(5)
+print("dimer type and id:", dimer_ID, dimer_type)
+
+train_xyz = read(f"custom_dataset/dimer_datasets/vama_updated_dimer_{dimer_type}_{dimer_ID}_train.xyz", ":")
+test_xyz = read(f"custom_dataset/dimer_datasets/vama_updated_dimer_{dimer_type}_{dimer_ID}_test.xyz", ":")
 all_list = train_xyz + test_xyz
 
-# len(all_list)
+avge0, count_atom_types = compute_average_E0s(all_list, energy_key = "energy")
+print("count_atom_types from ground truth:", count_atom_types)
 
-avge0 = compute_average_E0s(all_list, energy_key = "energy")
 true_energy, true_forces, distance_current = [], [], []
 
 for i in range(len(all_list)):
@@ -63,32 +67,46 @@ for i in range(len(all_list)):
     true_energy.append(all_list[i].get_potential_energy())
     true_forces.append(all_list[i].get_forces().reshape(num_atoms_per_snapshot*3,))
 
-# ground_state = avge0[1] * 10 + avge0[6] * 4 + avge0[7] * 2 + avge0[8] * 2
-# print("ground state energies:", avge0)
-
-pred_energy, pred_forces = [], []
-calculator = MACECalculator(model_paths='./checkpoints/dimer-'+dimer_type+'-lr-remove-adjusted-mace_run-123_stagetwo.model', device='cuda')
+ground_state = avge0[1] * count_atom_types[0] + avge0[6] * count_atom_types[1] + avge0[7] * count_atom_types[2] + avge0[8] * count_atom_types[3] 
+print("ground state dft energies:", avge0, ground_state)
+pred_energy, pred_forces = [], []  
+calculator = MACECalculator(model_paths=f'./checkpoints/mha-lr-mace-{dimer_type}-vama-5A_run-123_stagetwo.model', device='cuda')
+mace_all_list = []
 
 for i in range(len(all_list)):
     num_atoms_per_snapshot = len(all_list[i].get_atomic_numbers())
-    # distance_current.append(all_list[i].info['distance'])
-    # true_energy.append(all_list[i].get_potential_energy())
-    # true_forces.append(all_list[i].get_forces().reshape(20*3,))
     all_list[i].set_calculator(calculator)
+    mace_all_list.append(all_list[i])
     pred_energy.append(all_list[i].get_potential_energy())  
     pred_forces.append(all_list[i].get_forces().reshape(num_atoms_per_snapshot*3))   
 
-# sr_pred_energy = np.load("sr_pred_energy_6_A.npy")
-# sr_pred_force = np.load("sr_pred_force_6_A.npy")
+# sr_pred_energy, sr_pred_forces = [], []
+# sr_calculator = MACECalculator(model_paths=f'./checkpoints/sr-mace-{dimer_type}-vama_run-123_stagetwo.model', device='cuda')
+# for i in range(len(all_list)):
+#     num_atoms_per_snapshot = len(all_list[i].get_atomic_numbers())
+#     all_list[i].set_calculator(sr_calculator)
+#     sr_pred_energy.append(all_list[i].get_potential_energy())  
+#     sr_pred_forces.append(all_list[i].get_forces().reshape(num_atoms_per_snapshot*3))   
+# np.save(f"sr_pred_energy_6A_{dimer_type}_{dimer_ID}.npy", sr_pred_energy)
+# np.save(f"sr_pred_force_6A_{dimer_type}_{dimer_ID}.npy", sr_pred_forces)
+
+sr_pred_energy = np.load(f"sr_pred_energy_6A_{dimer_type}_{dimer_ID}.npy")
+sr_pred_forces = np.load(f"sr_pred_force_6A_{dimer_type}_{dimer_ID}.npy")
+
+mace_avge0, mace_count_atom_types = compute_average_E0s(all_list, energy_key = "energy")
+mace_ground_state = mace_avge0[1] * mace_count_atom_types[0] + mace_avge0[6] * mace_count_atom_types[1] + mace_avge0[7] * mace_count_atom_types[2] + mace_avge0[8] * mace_count_atom_types[3] #for CC
+
+print("count_atom_types from mace:", mace_count_atom_types)
+print("mace_avge0:", mace_avge0, mace_ground_state)
 
 plt.figure()
-plt.plot(distance_current, pred_energy, 'ro', label='lr predicted')
+plt.plot(distance_current, pred_energy, 'ro', markerfacecolor='none', label='lr predicted')
 plt.plot(distance_current, true_energy, 'bo', label='true values')
-# plt.plot(distance_current, sr_pred_energy-ground_state, 'ko', label='sr predicted')
+# plt.plot(distance_current, sr_pred_energy, 'ko', markerfacecolor='none', label='sr predicted')
 plt.legend(frameon=False)
 plt.xlabel('distance (A)')
 plt.ylabel("binding energy (eV)")
-plt.savefig("dimer_"+dimer_type+"_binding_curve_adjusted.png", bbox_inches='tight')
+plt.savefig("dimer_"+dimer_type+"_"+dimer_ID+"_binding_curve_adjusted.png", bbox_inches='tight')
 plt.show()
 
 print("finished plotting")

@@ -53,7 +53,7 @@ from mace.tools.scripts_utils import (
 from mace.tools.slurm_distributed import DistributedEnvironment
 from mace.tools.utils import AtomicNumberTable
 
-torch.autograd.set_detect_anomaly(True)
+# torch.autograd.set_detect_anomaly(True)
 
 def main() -> None:
     """

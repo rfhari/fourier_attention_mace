@@ -1,0 +1,68 @@
+Timer unit: 1e-06 s
+
+Total time: 391.501 s
+File: /trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace/mace/modules/ewald_mace.py
+Function: forward at line 29
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    29                                               @profile
+    30                                               def forward(self, q_vector, k_vector, v_vector, data: Dict[str, torch.Tensor], **kwargs):
+    31       487       5479.0     11.3      0.0          print("self.dl k-grid:", self.dl)
+    32       487       2602.2      5.3      0.0          print("q_vector from forward:", q_vector.shape)
+    33       487     337755.5    693.5      0.1          print("torch.isfinite(q_vector).all():", torch.isfinite(q_vector).all(), "torch.isnan(q_vector).any():", torch.isnan(q_vector).all())
+    34       487     148274.1    304.5      0.0          print("torch.isfinite(k_vector).all():", torch.isfinite(k_vector).all(), "torch.isnan(k_vector).any():", torch.isnan(k_vector).all())
+    35       487     138721.8    284.8      0.0          print("torch.isfinite(v_vector).all():", torch.isfinite(v_vector).all(), "torch.isnan(v_vector).any():", torch.isnan(v_vector).all())
+    36                                           
+    37       487        304.0      0.6      0.0          if data["batch"] is None:
+    38                                                       n_nodes = data['positions'].shape[0]
+    39                                                       batch_now = torch.zeros(n_nodes, dtype=torch.int64, device=data['positions'].device)
+    40                                                   else:
+    41       487        134.0      0.3      0.0              batch_now = data["batch"]
+    42                                                   
+    43       487       8140.8     16.7      0.0          box = data['cell'].view(-1, 3, 3).diagonal(dim1=-2, dim2=-1)
+    44       487        211.8      0.4      0.0          r = data['positions']
+    45                                           
+    46       487        564.9      1.2      0.0          n, d = r.shape
+    47       487        157.1      0.3      0.0          assert d == 3, 'r dimension error'
+    48       487        621.0      1.3      0.0          assert n == q_vector.size(0), 'q dimension error'
+    49       487        260.1      0.5      0.0          assert n == k_vector.size(0), 'k dimension error'
+    50       487        240.2      0.5      0.0          assert n == v_vector.size(0), 'v dimension error'
+    51                                           
+    52       487      41254.7     84.7      0.0          unique_batches = torch.unique(batch_now)  # Get unique batch indices
+    53                                           
+    54       487        161.8      0.3      0.0          results = []
+    55      1576       7782.8      4.9      0.0          for i in unique_batches:
+    56      1089      21606.7     19.8      0.0              mask = batch_now == i  # Create a mask for the i-th configuration
+    57                                                       # Calculate the potential energy for the i-th configuration
+    58      1089   69412514.1  63739.7     17.7              k_pot = self.compute_potential_optimized(r[mask], k_vector[mask], box[i], 'k')
+    59      1089   74304058.0  68231.5     19.0              v_pot = self.compute_potential_optimized(r[mask], v_vector[mask], box[i], 'v')
+    60      1089   89683817.2  82354.3     22.9              q_pot = self.compute_potential_optimized(r[mask], q_vector[mask], box[i], 'q')
+    61      1089      12585.7     11.6      0.0              print("q_pot:", q_pot.shape, k_pot.shape, v_pot.shape)
+    62                                           
+    63      1089   60999909.5  56014.6     15.6              attention_weights = torch.einsum('ijk,jk->ij', torch.transpose(torch.abs(q_pot), 1, 2), torch.abs(k_pot))
+    64      1089   41823006.6  38405.0     10.7              print("i:", i, "q_pot dtype:", q_pot.dtype, "torch.isfinite(q_pot).all():", torch.isfinite(q_pot).all(), "torch.isnan(q_pot).any():", torch.isnan(q_pot).all(), "min. {:.5f}, max. {:.5f}".format(q_pot.real.min(), q_pot.real.max()))
+    65      1089    4401781.0   4042.0      1.1              print("i:", i, "k_pot dtype:", k_pot.dtype, "torch.isfinite(k_pot).all():", torch.isfinite(k_pot).all(), "torch.isnan(k_pot).any():", torch.isnan(k_pot).all(), "min. {:.5f}, max. {:.5f}".format(k_pot.real.min(), k_pot.real.max()))
+    66      1089    1664743.6   1528.7      0.4              print("i:", i, "v_pot dtype:", v_pot.dtype, "torch.isfinite(v_pot).all():", torch.isfinite(v_pot).all(), "torch.isnan(v_pot).any():", torch.isnan(v_pot).all(), "min. {:.5f}, max. {:.5f}".format(v_pot.real.min(), v_pot.real.max()))
+    67                                           
+    68      1089       7886.7      7.2      0.0              real_attention_weights = torch.real(attention_weights)
+    69                                                       # attention_weights = attention_weights / torch.sqrt(torch.tensor(k_pot.shape[1], dtype=torch.float))
+    70      1089     626818.9    575.6      0.2              print("i:", i, "attention_weights dtype:", attention_weights.dtype, "torch.isfinite(attention_weights).all():", torch.isfinite(attention_weights).all(), "torch.isnan(attention_weights).any():", torch.isnan(attention_weights).all(), "min. {:.5f}, max. {:.5f}".format(attention_weights.real.min(), attention_weights.real.max()))
+    71                                           
+    72      1089      89095.2     81.8      0.0              max_values, _ = torch.max(real_attention_weights, dim=-1, keepdim=True)
+    73      1089      32860.9     30.2      0.0              shifted_attention_weights = real_attention_weights - max_values
+    74                                           
+    75      1089     166813.0    153.2      0.0              log_attention_weights = torch.log_softmax(shifted_attention_weights, dim=-1)
+    76      1089     119895.1    110.1      0.0              softmax_attention_weights = torch.exp(log_attention_weights)
+    77                                           
+    78      1089    3636746.2   3339.5      0.9              weighted_values = softmax_attention_weights[:, :, None] * v_pot[None, :, :]
+    79      1089   43665576.4  40096.9     11.2              real_space_weighted_values = self.compute_inverse_transform_optimized(r[mask], weighted_values, box[i])
+    80                                           
+    81      1089       9881.0      9.1      0.0              print("node_feats_list:", weighted_values.shape, real_space_weighted_values.shape)
+    82      1089      67463.5     61.9      0.0              results.append(torch.real(real_space_weighted_values))
+    83                                           
+    84       487      57749.5    118.6      0.0          results = torch.cat(results, dim=0) 
+    85       487       2950.6      6.1      0.0          print("results:", results.shape)       
+    86       487        130.9      0.3      0.0          return results
+
+391.50 seconds - /trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace/mace/modules/ewald_mace.py:29 - forward

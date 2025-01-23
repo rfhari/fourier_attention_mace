@@ -1,14 +1,14 @@
 #!/bin/bash 
 
-#SBATCH -J mace_exp
+#SBATCH -J mha_mace
 #SBATCH -p batch
 #SBATCH -o mace_lr_%j.out
-#SBATCH --time=10:00:00
+#SBATCH --time=30:00:00
 #SBATCH -N 1           
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=100G
-#SBATCH --gpus=1
+
 
 MINICONDA_PATH=/trace/group/mcgaughey/hariharr/miniconda3
 source $MINICONDA_PATH/etc/profile.d/conda.sh
@@ -17,61 +17,30 @@ conda activate /trace/group/mcgaughey/hariharr/miniconda3/envs/mace
 
 export PYTHONPATH=/trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace_mha:$PYTHONPATH
 
-# python /trace/group/mcgaughey/hariharr/mace_exploration/fourier_attention_mace/mace/mace/cli/run_train.py \
-#     --log_dir="./logs" \
-#     --energy_key="energy" \
-#     --forces_key="forces" \
-#     --name="dimer-cc-lr-mace-vslides" \
-#     --train_file="./custom_dataset/dimer_cc/dimers_cc_train.xyz" \
-#     --valid_file="./custom_dataset/dimer_cc/dimers_cc_test.xyz" \
-#     --test_file="./custom_dataset/dimer_cc/dimers_cc_test.xyz" \
-#     --E0s="average" \
-#     --model="MACE" \
-#     --num_interactions=2 \
-#     --num_channels=256 \
-#     --max_L=2 \
-#     --correlation=3 \
-#     --r_max=6 \
-#     --forces_weight=1000 \
-#     --energy_weight=10 \
-#     --batch_size=2 \
-#     --valid_batch_size=2 \
-#     --max_num_epochs=2000 \
-#     --start_swa=1200 \
-#     --scheduler_patience=5 \
-#     --patience=15 \
-#     --eval_interval=3 \
-#     --ema \
-#     --swa \
-#     --swa_forces_weight=1000 \
-#     --error_table='PerAtomMAE' \
-#     --default_dtype="float64"\
-#     --device=cuda \
-#     --seed=123 \
-#     --save_cpu
-
+dimer_type=PP
+dimer_id=5
 
 python ./mace/cli/run_train.py \
     --log_dir="./logs" \
     --energy_key="energy" \
     --forces_key="forces" \
-    --name="dimer-CP-lr-remove-adjusted-mace" \
-    --train_file="./custom_dataset/dimer_datasets/dimers_CP_train.xyz" \
-    --valid_file="./custom_dataset/dimer_datasets/dimers_CP_test.xyz" \
-    --test_file="./custom_dataset/dimer_datasets/dimers_CP_test.xyz" \
+    --name="mha-lr-mace-${dimer_type}-vama-5A" \
+    --train_file="./custom_dataset/dimer_datasets/vama_updated_dimer_${dimer_type}_${dimer_id}_train.xyz" \
+    --valid_file="./custom_dataset/dimer_datasets/vama_updated_dimer_${dimer_type}_${dimer_id}_test.xyz" \
+    --test_file="./custom_dataset/dimer_datasets/vama_updated_dimer_${dimer_type}_${dimer_id}_test.xyz" \
     --E0s="average" \
     --model="MACE" \
     --num_interactions=2 \
     --num_channels=256 \
     --max_L=2 \
-    --correlation=3 \
-    --r_max=6 \
-    --forces_weight=100 \
+    --correlation=1 \
+    --r_max=5 \
+    --forces_weight=1000 \
     --energy_weight=10 \
     --batch_size=2 \
     --valid_batch_size=2 \
-    --max_num_epochs=800 \
-    --start_swa=600 \
+    --max_num_epochs=300 \
+    --start_swa=195 \
     --scheduler_patience=5 \
     --patience=5 \
     --eval_interval=3 \
@@ -79,11 +48,12 @@ python ./mace/cli/run_train.py \
     --swa \
     --lr=0.01 \
     --swa_forces_weight=10 \
-    --swa_energy_weight=100 \
+    --swa_energy_weight=1000 \
     --error_table='PerAtomMAE' \
-    --default_dtype="float64"\
-    --device=cuda \
-    --seed=123 
+    --default_dtype="float64" \
+    --device=cpu \
+    --seed=123 \
+    --restart_latest
 
 # python mace/cli/run_train.py \
 #     --name="MACE" \
